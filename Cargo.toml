@@ -1,0 +1,5 @@
+[workspace]
+members = [
+   "sim_lib",
+   "gl_app"
+]
