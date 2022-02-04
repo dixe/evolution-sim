@@ -87,7 +87,7 @@ impl gls::State<Message> for State {
         let mut cells = vec![];
         for indiv in &self.sim.world().individuals {
             let coord = index_functions::index_to_coord(indiv.grid_index, self.sim.world().grid.size);
-            cells.push(Cell { cell_type: CellType::Square, color: Color::RGB(255,0,0), cell: Point::new(coord.x, coord.y) })
+            cells.push(Cell { cell_type: CellType::Square, color: Color::RGB(255,0,0), point: Point::new(coord.x, coord.y) })
         }
 
 
