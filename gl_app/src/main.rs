@@ -6,6 +6,7 @@ use gl_lib_sdl as gls;
 use gl_lib_sdl::{
     gl_lib::text_rendering::font,
     gl_lib::na,
+    sdl2
 };
 
 mod grid;
@@ -28,9 +29,6 @@ fn main() -> Result<(), failure::Error> {
     sim.initialize_first_generation(None);
 
 
-    sim.step_single_thread();
-
-
     let width = 600;
     let height = 600;
 
@@ -42,10 +40,15 @@ fn main() -> Result<(), failure::Error> {
 
     window.setup_blend();
 
-    let mut state = State { sim };
+    let mut model = Model { sim, run_state: RunState::Paused };
 
     while !window.should_quit() {
-        window.update(&mut state);
+
+        if model.run_state == RunState::Running {
+            model.sim.step_single_thread();
+        }
+
+        window.update(&mut model);
     }
 
     Ok(())
@@ -54,23 +57,36 @@ fn main() -> Result<(), failure::Error> {
 
 
 
-#[derive(Clone)]
-struct State {
-    sim: sim_lib::simulation::Simulation,
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum RunState {
+    Running,
+    Paused
 }
 
-impl gls::State<Message> for State {
+
+#[derive(Clone)]
+struct Model {
+    sim: sim_lib::simulation::Simulation,
+    run_state: RunState,
+}
+
+impl gls::State<Message> for Model {
 
     fn handle_message(&mut self, message: &Message, _window_access: &gls::window::WindowComponentAccess) {
 
         match message {
             Message::Step => {
-
+                self.sim.step_single_thread();
             },
             Message::GridClick(point) => {
                 println!("Grid clicked at: {:?}", point);
             }
-            _ => {},
+            Message::Run => {
+                self.run_state = RunState::Running
+            },
+            Message::Pause => {
+                self.run_state = RunState::Paused
+            },
         }
 
     }
@@ -96,16 +112,16 @@ impl gls::State<Message> for State {
             .add(Row::new()
                  .padding(5.0)
                  .width(Fill)
-                 .add(Button::new("Start", Some(Message::Run))
+                 .add(Button::new("Run", Some(Message::Run))
                       .height(Px(50))
                  )
                  .add(Button::new("Pause", Some(Message::Pause))
                       .height(Px(50))
                       .align_center()
                  )
-                 .add(Button::new("Pause", Some(Message::Step))
-                      .height(Px(50))
-                      .align_right()
+                 .add_if(self.run_state != RunState::Running, Button::new("Step", Some(Message::Step))
+                         .height(Px(50))
+                         .align_right()
                  ))
             .add(GridLayout::new(size, cells, Message::GridClick, Message::GridClick)
                  .width(Fill)

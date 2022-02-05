@@ -40,8 +40,7 @@ pub struct GridComponent<Message> {
     size: GridSize,
     left_clicked_message: fn(Point) -> Message,
     right_clicked_message: fn(Point) -> Message,
-    cells: Vec::<Cell>
-
+    cells: Vec::<Cell>,
 }
 
 
