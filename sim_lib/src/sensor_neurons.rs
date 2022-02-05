@@ -1,33 +1,44 @@
 use rand::Rng;
 use crate::combined_types::*;
+use crate::basic_types::*;
 
 
 
-// RNG AND TEST SENSOR INPUTS
-pub fn random_neuron(world: &World, indiv: &Individual) -> f64 {
-    let mut rng = rand::thread_rng();
-    rng.gen_range(-1.0..1.0)
+pub fn get_sensor_input(sensor: Sensor, world: &World, indiv: &Individual) -> f64 {
+
+
+    match sensor {
+        Sensor::Constant => 1.0,
+        Sensor::Random => {
+            let mut rng = rand::thread_rng();
+            rng.gen_range(-1.0..1.0)
+        },
+        Sensor::LocX => location_x(world, indiv),
+        Sensor::LocY => location_y(world, indiv),
+        Sensor::WorldBorderDistX => world_border_dist_x(world, indiv),
+        Sensor::WorldBorderDistY => world_border_dist_y(world, indiv),
+        Sensor::BlockedForward => {
+            if world.is_dir_empty(indiv.grid_index, indiv.forward) {
+                0.0
+            }
+            else {
+                1.0
+            }
+        },
+    }
 }
 
-pub fn constant_neuron(world: &World, indiv: &Individual) -> f64 {
-    1.0
-}
 
 
-// WOLRD LOCATION
-// -1 is all the way left
-// 1 is all the way right
-pub fn location_x(world: &World, indiv: &Individual) -> f64 {
+
+fn location_x(world: &World, indiv: &Individual) -> f64 {
     // given the index into world grid we can see how close to an edge we are by taking modolus width
     // multiply by 2 and subtact 2 to scale from 0..1 to -1..1 range
     let width_percentage = ((indiv.grid_index % world.grid.size.x) as f64) / world.grid.size.x as f64;
     width_percentage * 2.0 - 1.0
 }
 
-// WOLRD LOCATION DISTANCE
-// -1 is all the way top
-// 1 is all the way down
-pub fn location_y(world: &World, indiv: &Individual) -> f64 {
+fn location_y(world: &World, indiv: &Individual) -> f64 {
     // given the index into world grid we can see how close to an edge we are by taking dividing by width
     let height_percentage = (indiv.grid_index / world.grid.size.y) as f64 / world.grid.size.y as f64;
     height_percentage * 2.0 - 1.0
@@ -37,56 +48,20 @@ pub fn location_y(world: &World, indiv: &Individual) -> f64 {
 // WOLRD BORDER_DIST_X
 // 0 is at a border on X
 // 1 in the middle
-pub fn world_border_dist_x(world: &World, indiv: &Individual) -> f64 {
+fn world_border_dist_x(world: &World, indiv: &Individual) -> f64 {
     let location = location_x(world, indiv);
     // given location x between -1 and 1 take the absolute value and subtract it from 1
     1.0 - f64::abs(location)
 }
-
-
-
 // WOLRD BORDER_DIST_Y
 // 0 is at a border on Y
 // 1 in the middle
-pub fn world_border_dist_y(world: &World, indiv: &Individual) -> f64 {
+fn world_border_dist_y(world: &World, indiv: &Individual) -> f64 {
     let location = location_y(world, indiv);
     // given location x between -1 and 1 take the absolute value and subtract it from 1
     1.0 - f64::abs(location)
 }
 
-
-
-// BLOCKED FORWARD
-// 0 is free
-// 1 is blocked
-pub fn blocked_forward(world: &World, indiv: &Individual) -> f64 {
-
-    if world.is_dir_empty(indiv.grid_index, indiv.forward) {
-        0.0
-    }
-    else {
-        1.0
-    }
-}
-
-
-
-// TODO: make a derive macro that can do this automaticly
-pub fn all_sensor_neurons() -> Vec<SensorNeuron> {
-    vec![
-        //Location
-        location_x,
-        location_y,
-
-        // world_border distance
-        world_border_dist_x,
-        world_border_dist_y,
-
-
-        // Random and constant
-        random_neuron,
-        constant_neuron]
-}
 
 
 
@@ -170,10 +145,11 @@ mod tests {
         let i1_index = world.add_individual(indiv_0_1);
 
 
-        let is_blocked = blocked_forward(&world, &world.individuals[i0_index]);
+        let is_blocked = get_sensor_input(Sensor::BlockedForward, &world, &world.individuals[i0_index]);
+
         assert_eq!(1.0, is_blocked);
 
-        let is_blocked = blocked_forward(&world, &world.individuals[i1_index]);
+        let is_blocked = get_sensor_input(Sensor::BlockedForward, &world, &world.individuals[i1_index]);
         assert_eq!(0.0, is_blocked);
 
         //TODO: Maybe also test Down Left and Right

@@ -73,12 +73,13 @@ mod tests {
         let indiv_index = world.add_individual(indiv);
 
 
-        perform_action(Activation { action: Action::MoveForward, weight: 0.1}, &mut world, indiv_index);
+
+        perform_action(&Activation { action: Action::MoveForward, weight: 0.1, indiv_index}, &mut world);
 
         // No movement
         assert_eq!(old_grid_index, world.individuals[indiv_index].grid_index);
 
-        perform_action(Activation { action: Action::MoveForward, weight: 1.0 }, &mut world, indiv_index);
+        perform_action(&Activation { action: Action::MoveForward, weight: 1.0, indiv_index }, &mut world);
         assert_eq!(old_grid_index - 128, world.individuals[indiv_index].grid_index);
 
     }

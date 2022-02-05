@@ -136,18 +136,13 @@ impl World {
             self.grid.tiles[indiv.grid_index].individual_index = Some(indiv.index);
         }
     }
-
-
 }
 
-pub type SensorNeuron = fn(&World, &Individual) -> f64;
 
 
-
-// TODO: Add debug when SensorNeuron is a enum and not function pointer
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Configuration {
-    pub sensor_neurons: Vec::<SensorNeuron>,
+    pub sensor_neurons: Vec::<Sensor>,
     pub hidden_neurons: usize,
     pub action_neurons: Vec::<Action>,
     pub generation_steps: usize,
@@ -157,20 +152,10 @@ pub struct Configuration {
 impl Default for Configuration {
     fn default () -> Self {
         Configuration {
-            sensor_neurons: sensor_neurons::all_sensor_neurons(),
+            sensor_neurons: all_sensors(),
             hidden_neurons: 2,
             action_neurons: all_actions(),
             generation_steps: 300
         }
-    }
-}
-
-impl fmt::Debug for Configuration {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("Configuration")
-            .field("hidden_neurons", &self.hidden_neurons)
-            .field("sensor_count", &self.sensor_neurons.len())
-            .field("action_count", &self.action_neurons.len())
-            .finish()
     }
 }

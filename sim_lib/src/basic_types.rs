@@ -32,6 +32,29 @@ macro_rules! make_enum {
     }
 }
 
+// SENSORS (inputs)
+pub fn all_sensors() -> Vec::<Sensor> {
+    ALL_SENSORS.to_vec()
+}
+
+make_enum! (Sensor ALL_SENSORS {
+    // Location
+    LocY,
+    LocX,
+
+    WorldBorderDistX,
+    WorldBorderDistY,
+
+    BlockedForward,
+
+    Random,
+    Constant,
+
+});
+
+
+
+//ACTIONS (output)
 pub fn all_actions() -> Vec::<Action> {
     ALL_ACTIONS.to_vec()
 }

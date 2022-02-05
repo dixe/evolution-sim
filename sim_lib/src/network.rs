@@ -1,5 +1,7 @@
 use crate::basic_types::*;
 use crate::combined_types::*;
+use crate::sensor_neurons;
+
 use rand;
 use rand::Rng;
 use std::fmt;
@@ -125,7 +127,7 @@ impl Network {
     }
 
 
-    pub fn run(&mut self, sensor_neurons: &Vec::<SensorNeuron>, world: &World, individual: &Individual) -> Vec<Activation> {
+    pub fn run(&mut self, sensor_neurons: &Vec::<Sensor>, world: &World, individual: &Individual) -> Vec<Activation> {
 
         // reset old values
         for i in 0..self.neurons.len() {
@@ -134,7 +136,8 @@ impl Network {
 
         // go over all over all sensor input
         for sensor_con in &self.sensor_inputs {
-            let reading = sensor_neurons[sensor_con.input_index](world, individual);
+            let sensor = sensor_neurons[sensor_con.input_index];
+            let reading = sensor_neurons::get_sensor_input(sensor, world, individual);
             self.neurons[sensor_con.output_index].value += reading * sensor_con.weight;
         }
 
@@ -168,7 +171,7 @@ mod tests {
 
 
         let mut config = Configuration::default();
-        config.sensor_neurons = vec![constant_neuron, constant_neuron, constant_neuron];
+        config.sensor_neurons = vec![Sensor::Constant, Sensor::Constant, Sensor::Constant];
         config.hidden_neurons = 0;
         config.action_neurons = vec![Action::MoveForward, Action::MoveX];
 
@@ -202,7 +205,7 @@ mod tests {
         let gene = Gene { from_neuron: 0, to_neuron: 1, weight: WEIGHT_SCALE as i16 };
 
         let mut config = Configuration::default();
-        config.sensor_neurons = vec![constant_neuron, constant_neuron, constant_neuron];
+        config.sensor_neurons = vec![Sensor::Constant, Sensor::Constant, Sensor::Constant];
         config.hidden_neurons = 1;
         config.action_neurons = vec![Action::MoveForward, Action::MoveX];
 
@@ -238,7 +241,7 @@ mod tests {
         let gene1 = Gene { from_neuron: 1, to_neuron: 1, weight: - WEIGHT_SCALE as i16 };
 
         let mut config = Configuration::default();
-        config.sensor_neurons = vec![constant_neuron, constant_neuron, constant_neuron];
+        config.sensor_neurons = vec![Sensor::Constant, Sensor::Constant, Sensor::Constant];
         config.hidden_neurons = 1;
         config.action_neurons = vec![Action::MoveForward, Action::MoveX];
 

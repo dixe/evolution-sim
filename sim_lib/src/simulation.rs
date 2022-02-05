@@ -290,7 +290,7 @@ mod tests {
 
         let mut builder = SimulationBuilder::new(128, 128);
 
-        builder.config_mut().sensor_neurons = vec![constant_neuron];
+        builder.config_mut().sensor_neurons = vec![Sensor::Constant];
         builder.config_mut().hidden_neurons = 0;
         builder.config_mut().action_neurons = vec![Action::MoveForward];
         builder.population_size(1);
