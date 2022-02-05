@@ -6,7 +6,6 @@ use gl_lib_sdl as gls;
 use gl_lib_sdl::{
     gl_lib::text_rendering::font,
     gl_lib::na,
-    sdl2,
 };
 
 mod grid;
@@ -28,8 +27,10 @@ pub enum Message {
 }
 
 static INDIV_CELL_INDEX : usize = 0;
-static SURIVE_CELL_INDEX : usize = 1;
+static SURVIVE_CELL_INDEX : usize = 1;
 static PHEROMONE_CELL_INDEX : usize = 2;
+
+
 fn main() -> Result<(), failure::Error> {
 
     let mut sim =
@@ -135,7 +136,7 @@ impl Model {
 
         // survive cells
         for coord in &self.sim.survive_cells() {
-            self.cells_info.cells[INDIV_CELL_INDEX].push(Cell { cell_type: CellType::Square, color: Color::RGBA(53, 212, 63, 50), point: Point::new(coord.x, coord.y) })
+            self.cells_info.cells[SURVIVE_CELL_INDEX].push(Cell { cell_type: CellType::Square, color: Color::RGBA(53, 212, 63, 50), point: Point::new(coord.x, coord.y) })
         }
 
         // pheromones

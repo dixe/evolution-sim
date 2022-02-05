@@ -21,10 +21,7 @@ pub struct LiveTextLayout<Message> {
 impl<Message> LiveTextLayout<Message> where Message: Clone {
     pub fn new(text: &LiveTextString, left_clicked_message: Option::<Message>) -> Self {
 
-        let text_pointer;
-        unsafe {
-            text_pointer = text as *const LiveTextString;
-        }
+        let text_pointer = text as *const LiveTextString;
 
         Self {
             attributes: Default::default(),

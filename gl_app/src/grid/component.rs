@@ -5,9 +5,8 @@ use gl_lib_sdl::{
         na,
         na::Translation3,
         objects::square,
-        ScreenBox,
         shader::Shader,
-        text_rendering::{ text_renderer::{TextRenderer, TextAlignment, TextAlignmentX, TextAlignmentY} },
+        text_rendering::{ text_renderer::{TextRenderer} },
     }
 };
 use std::fmt;
@@ -134,6 +133,8 @@ impl<Message> GridComponent<Message> where Message: Clone  {
         // TODO: do this more correct, so it scales in size well
         sc_top_left.x += 0.01;
         sc_top_left.y -= 0.01;
+        sc_bottom_right.x -= 0.01;
+        sc_top_left.y += 0.01;
 
 
         let sc_width = sc_bottom_right.x - sc_top_left.x;
@@ -151,8 +152,8 @@ impl<Message> GridComponent<Message> where Message: Clone  {
         model[5] = y_scale;
 
         // Move first to begining of our screen space
-        let mut x_move = sc_top_left.x + point.x as f32 / self.size.columns as f32 * sc_width;
-        let mut y_move = sc_top_left.y + point.y as f32 / self.size.rows as f32 * sc_height;
+        let x_move = sc_top_left.x + point.x as f32 / self.size.columns as f32 * sc_width;
+        let y_move = sc_top_left.y + point.y as f32 / self.size.rows as f32 * sc_height;
 
 
         let trans = Translation3::new(x_move, y_move, 0.0);
@@ -183,7 +184,7 @@ impl<Message> base::ComponentTrait<Message> for GridComponent<Message> where Mes
     }
 
 
-    fn render(&self, gl: &gl::Gl, tr: &mut TextRenderer, render_square: &square::Square, screen_w: f32, screen_h: f32) {
+    fn render(&self, gl: &gl::Gl, _tr: &mut TextRenderer, render_square: &square::Square, screen_w: f32, screen_h: f32) {
 
         let grid_transform = self.base.unit_square_transform_matrix(screen_w as f32, screen_h as f32);
 

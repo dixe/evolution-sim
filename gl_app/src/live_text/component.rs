@@ -2,12 +2,9 @@ use gl_lib_sdl::{
     components::base,
     gl_lib::{
         gl,
-        na,
-        na::Translation3,
         objects::square,
         ScreenBox,
-        shader::Shader,
-        text_rendering::{ text_renderer::{TextRenderer, TextAlignment, TextAlignmentX, TextAlignmentY} },
+        text_rendering::{ text_renderer::{TextRenderer} },
     }
 };
 use std::fmt;
@@ -24,7 +21,7 @@ pub struct LiveTextComponent<Message> {
 
 impl<Message> LiveTextComponent<Message> where Message: Clone  {
 
-    pub fn new(gl: &gl::Gl, text_pointer: *const LiveTextString, left_clicked_message: Option::<Message>) -> Box<Self> {
+    pub fn new(_gl: &gl::Gl, text_pointer: *const LiveTextString, left_clicked_message: Option::<Message>) -> Box<Self> {
         Box::new(Self {
             base: Default::default(),
             left_clicked_message,
@@ -32,7 +29,7 @@ impl<Message> LiveTextComponent<Message> where Message: Clone  {
         })
     }
 
-    fn render_livetext(&self, gl: &gl::Gl, tr: &mut TextRenderer, render_square: &square::Square, screen_w: f32, screen_h: f32) {
+    fn render_livetext(&self, gl: &gl::Gl, tr: &mut TextRenderer, screen_w: f32, screen_h: f32) {
 
         let screen_box = ScreenBox::new(self.base.x, self.base.y, self.base.width, self.base.height, screen_w, screen_h);
 
@@ -64,8 +61,8 @@ impl<Message> base::ComponentTrait<Message> for LiveTextComponent<Message> where
     }
 
 
-    fn render(&self, gl: &gl::Gl, tr: &mut TextRenderer, render_square: &square::Square, screen_w: f32, screen_h: f32) {
-        self.render_livetext(gl, tr, render_square, screen_w, screen_h);
+    fn render(&self, gl: &gl::Gl, tr: &mut TextRenderer, _render_square: &square::Square, screen_w: f32, screen_h: f32) {
+        self.render_livetext(gl, tr, screen_w, screen_h);
     }
 
 
@@ -76,7 +73,7 @@ impl<Message> base::ComponentTrait<Message> for LiveTextComponent<Message> where
     fn on_event(&self, event: base::ComponentEvent) -> Option<Message> {
         if let Some(msg) = &self.left_clicked_message {
             return match event {
-                base::ComponentEvent::Clicked(click_type, _ ) => {
+                base::ComponentEvent::Clicked(_, _ ) => {
                     Some(msg.clone())
                 },
                 _ => None
