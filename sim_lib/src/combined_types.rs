@@ -148,6 +148,7 @@ pub struct Configuration {
     pub sensor_neurons: Vec::<SensorNeuron>,
     pub hidden_neurons: usize,
     pub action_neurons: Vec::<Action>,
+    pub generation_steps: usize,
 }
 
 
@@ -157,6 +158,7 @@ impl Default for Configuration {
             sensor_neurons: sensor_neurons::all_sensor_neurons(),
             hidden_neurons: 2,
             action_neurons: vec![Action::MoveForward], //TODO: do in macro so we always get everything
+            generation_steps: 300
         }
     }
 }

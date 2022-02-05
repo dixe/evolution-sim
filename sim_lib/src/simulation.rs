@@ -48,7 +48,10 @@ pub struct Simulation {
     config: Configuration,
     world: World,
     brains: Vec::<Brain>,
+
     generation: usize,
+    generation_step: usize,
+
     rng: rand::rngs::ThreadRng,
 
     population_size: usize,
@@ -89,6 +92,7 @@ impl Simulation {
             population_size,
             genome_length: 3,
             generation: 0,
+            generation_step: 0,
             rng: rand::thread_rng(),
             individual_grid_placement_function: set_individual_grid_index_random
         }
@@ -125,8 +129,21 @@ impl Simulation {
 
 
 
+    pub fn generation(&self) -> usize {
+        self.generation
+    }
+
     pub fn world(&self) -> &World {
         &self.world
+    }
+
+    pub fn run_generation(&mut self) {
+
+        let gen = self.generation;
+
+        while gen == self.generation {
+            self.step_single_thread();
+        }
     }
 
     pub fn step_single_thread(&mut self) {
@@ -135,6 +152,15 @@ impl Simulation {
                 action_neurons::perform_action(action, &mut self.world, brain.indiv_index);
             }
         }
+
+        self.generation_step += 1;
+
+        if self.generation_step >= self.config.generation_steps {
+            self.generation += 1;
+            self.generation_step = 0;
+        }
+
+        // TODO: initialize new generation
     }
 
 }

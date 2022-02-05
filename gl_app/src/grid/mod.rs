@@ -11,6 +11,12 @@ pub struct GridSize  {
     pub rows: usize,
 }
 
+#[derive(Debug, Clone, Copy)]
+pub struct CellsPointer {
+    pointer: *const Cell,
+    len: usize
+}
+
 mod component;
 pub use self::component::*;
 

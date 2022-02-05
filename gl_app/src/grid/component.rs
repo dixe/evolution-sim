@@ -40,13 +40,13 @@ pub struct GridComponent<Message> {
     size: GridSize,
     left_clicked_message: fn(Point) -> Message,
     right_clicked_message: fn(Point) -> Message,
-    cells: Vec::<Cell>,
+    cells: CellsPointer
 }
 
 
 impl<Message> GridComponent<Message> where Message: Clone  {
 
-    pub fn new(gl: &gl::Gl, size: GridSize, cells: Vec::<Cell>, left_clicked_message: fn(Point) -> Message, right_clicked_message: fn(Point) -> Message) -> Box<Self> {
+    pub fn new(gl: &gl::Gl, size: GridSize, cells: CellsPointer, left_clicked_message: fn(Point) -> Message, right_clicked_message: fn(Point) -> Message) -> Box<Self> {
         let grid_shader = grid_shader(gl).unwrap();
 
         let cell_shader = cell_shader(gl).unwrap();
@@ -64,6 +64,7 @@ impl<Message> GridComponent<Message> where Message: Clone  {
 
     fn render_grid(&self, gl: &gl::Gl, transform: na::Matrix4::<f32>, render_square: &square::Square) {
 
+
         self.grid_shader.set_used();
 
         self.grid_shader.set_mat4(gl, "transform", transform);
@@ -79,8 +80,13 @@ impl<Message> GridComponent<Message> where Message: Clone  {
 
     fn render_cells(&self, gl: &gl::Gl, render_square: &square::Square, screen_w: f32, screen_h: f32) {
 
-        for cell in &self.cells {
+        let slice;
+        unsafe {
+            slice = std::slice::from_raw_parts(self.cells.pointer, self.cells.len)
+        }
 
+        for cell in slice {
+            //let transform = self.base.unit_square_transform_matrix(screen_w as f32, screen_h as f32);
             let transform = self.cell_transform_matrix(cell.point, screen_w, screen_h);
             self.cell_shader.set_used();
 
@@ -104,7 +110,19 @@ impl<Message> GridComponent<Message> where Message: Clone  {
         // TODO: move to top of render_cells and only do math ones, except that which depends on point
         // TODO: maybe points in as a buffer and render all "at the same time"
 
-        let sc_top_left = base::ComponentBase::window_to_screen_coords(self.base.x, self.base.y, screen_w, screen_h);
+        // Get screen coord top left and bottom right. Out screen space is inside this rect
+        let mut sc_top_left = base::ComponentBase::window_to_screen_coords(self.base.x, self.base.y, screen_w, screen_h);
+        let mut sc_bottom_right = base::ComponentBase::window_to_screen_coords(self.base.x + self.base.width, self.base.y + self.base.height , screen_w, screen_h);
+
+
+        // remove border space from cell space
+        // TODO: do this more correct, so it scales in size well
+        sc_top_left.x += 0.01;
+        sc_top_left.y -= 0.01;
+
+
+        let sc_width = sc_bottom_right.x - sc_top_left.x;
+        let sc_height = sc_bottom_right.y - sc_top_left.y;
 
         let screen_x_scale = self.base.width  / screen_w  * 2.0;
         let screen_y_scale = self.base.height / screen_h * 2.0;
@@ -117,20 +135,13 @@ impl<Message> GridComponent<Message> where Message: Clone  {
         model[0] = x_scale;
         model[5] = y_scale;
 
-        // move to position
+        // Move first to begining of our screen space
+        let mut x_move = sc_top_left.x + point.x as f32 / self.size.columns as f32 * sc_width;
+        let mut y_move = sc_top_left.y + point.y as f32 / self.size.rows as f32 * sc_height;
 
-        // p.x = 0 should move - self.rows/2  p.x = rows should move self.rows/2
-
-        // scales p goes from -1 .. 1, not really 1 but (rows-1)/rows,
-        let scaled_p_x = point.x as f32 / self.size.rows as f32 * 2.0 - 1.0; // TODO: when sc_top_left = -1 then 2.0, when 0.0 then 1.0, when 0.8 then 0.2;
-
-        let scaled_p_y = point.y as f32 / self.size.columns as f32 * (sc_top_left.y + 1.0);
-
-        //panic!();
-        let x_move = scaled_p_x + x_scale * 0.5;
-        let y_move = sc_top_left.y -y_scale * 0.5 - scaled_p_y;// scaled_p_y;// + scaled_p_y;//- y_scale * 0.5;
 
         let trans = Translation3::new(x_move, y_move, 0.0);
+
 
         model = trans.to_homogeneous() * model;
 
