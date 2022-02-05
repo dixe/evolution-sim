@@ -36,17 +36,35 @@ impl SimulationBuilder {
         self.sim
     }
 
-    pub fn criteria(&mut self, c: sc::SurvivalCriteria)
+    pub fn criteria(mut self, c: sc::SurvivalCriteria) -> Self
     {
         self.sim.criteria = c;
+        self
     }
 
-    pub fn population_size(&mut self, pop: usize) {
+    pub fn population_size(mut self, pop: usize) -> Self {
         self.sim.population_size = pop;
+        self
     }
 
-    pub fn config_mut(&mut self) -> &mut Configuration {
-        &mut self.sim.config
+    pub fn mutation_rate(mut self, rate: f32) -> Self {
+        self.sim.config.mutation_rate = rate;
+        self
+    }
+
+    pub fn action_neurons(mut self, an: Vec::<Action>) -> Self {
+        self.sim.config.action_neurons = an;
+        self
+    }
+
+    pub fn hidden_neurons(mut self, hn: usize) -> Self {
+        self.sim.config.hidden_neurons = hn;
+        self
+    }
+
+    pub fn sensor_neurons(mut self, sn: Vec::<Sensor>) -> Self {
+        self.sim.config.sensor_neurons = sn;
+        self
     }
 
 }
@@ -221,8 +239,14 @@ impl Simulation {
                 let index = survive_indexes[self.rng.gen_range(0..survive_indexes.len())];
 
                 let mut indiv = Individual::new();
-                // TODO: also maybe mutate genome
+                let mutation_change: f32 = self.rng.gen();
+
                 indiv.genome = self.world.individuals[index].genome.clone();
+                if mutation_change < self.config.mutation_rate {
+                    gene_functions::mutate_genome(&mut self.rng, &mut indiv.genome);
+                }
+                // TODO: also maybe mutate genome
+
                 indiv.index = i;
 
                 new_indivs.push(indiv);
@@ -230,21 +254,6 @@ impl Simulation {
 
             self.setup_individuals(new_indivs);
         }
-
-
-
-        /*
-        // Original way of doing doing steps
-
-        for brain in &mut self.brains {
-        let indiv = &self.world.individuals[brain.indiv_index];
-        for action in brain.network.run(&self.config.sensor_neurons, &self.world, &self.world.individuals[brain.indiv_index]) {
-        action_neurons::perform_action(&action, &mut self.world);
-    }
-    }
-
-
-         */
 
         let brains = &mut self.brains;
         let sensors = &self.config.sensor_neurons;
@@ -293,14 +302,13 @@ mod tests {
     #[test]
     fn forward_sim_1_step() {
 
-        let mut builder = SimulationBuilder::new(128, 128);
+        let mut sim = SimulationBuilder::new(128, 128)
+            .sensor_neurons(vec![Sensor::Constant])
+            .hidden_neurons(0)
+            .action_neurons(vec![Action::MoveForward])
+            .population_size(1)
+            .build();
 
-        builder.config_mut().sensor_neurons = vec![Sensor::Constant];
-        builder.config_mut().hidden_neurons = 0;
-        builder.config_mut().action_neurons = vec![Action::MoveForward];
-        builder.population_size(1);
-
-        let mut sim = builder.build();
         sim.initialize_first_generation(Some(|rng, genome_len| gene_functions::fixed_genome(rng, genome_len, 0, 0)));
 
         // find first indiv with index > width (128)
@@ -325,8 +333,5 @@ mod tests {
         sim.step_single_thread();
 
         assert_eq!(start + 128, sim.world.individuals[0].grid_index);
-
     }
-
-
 }

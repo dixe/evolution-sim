@@ -8,6 +8,7 @@ pub struct Gene {
     pub weight: i16, //  weight of connection
 }
 
+pub static GENE_BITS : usize = 32;
 
 
 macro_rules! all_variants {
@@ -125,3 +126,18 @@ make_enum! (Dir ALL_DIRS {
     Left,
     Right,
 });
+
+
+
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    fn gene_bit_size() {
+        assert_eq!(GENE_BITS, 8 * std::mem::size_of::<Gene>());
+    }
+
+}

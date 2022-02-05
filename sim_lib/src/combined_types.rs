@@ -149,6 +149,7 @@ pub struct Configuration {
     pub hidden_neurons: usize,
     pub action_neurons: Vec::<Action>,
     pub generation_steps: usize,
+    pub mutation_rate: f32,
 }
 
 
@@ -158,7 +159,8 @@ impl Default for Configuration {
             sensor_neurons: all_sensors(),
             hidden_neurons: 2,
             action_neurons: all_actions(),
-            generation_steps: 300
+            generation_steps: 300,
+            mutation_rate: 0.0,
         }
     }
 }

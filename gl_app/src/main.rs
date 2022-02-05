@@ -32,7 +32,10 @@ static SURIVE_CELL_INDEX : usize = 1;
 static PHEROMONE_CELL_INDEX : usize = 2;
 fn main() -> Result<(), failure::Error> {
 
-    let mut sim = sim_lib::simulation::SimulationBuilder::new(128, 128).build();
+    let mut sim =
+        sim_lib::simulation::SimulationBuilder::new(128, 128)
+        .mutation_rate(0.1)
+        .build();
 
     sim.initialize_first_generation(None);
 
@@ -135,8 +138,6 @@ impl Model {
             self.cells_info.cells[INDIV_CELL_INDEX].push(Cell { cell_type: CellType::Square, color: Color::RGBA(53, 212, 63, 50), point: Point::new(coord.x, coord.y) })
         }
 
-
-
         // pheromones
 
 
@@ -148,7 +149,8 @@ impl Model {
         for (i, indiv) in self.sim.world().individuals.iter().enumerate() {
             let coord = index_functions::index_to_coord(indiv.grid_index, self.sim.world().grid.size);
             self.cells_info.cells[0][i].point = Point::new(coord.x, coord.y);
-            //TODO: update color also??
+
+
             let color = gene_functions::genome_to_rgb(&indiv.genome);
             self.cells_info.cells[0][i].color = Color::RGB(color.0, color.1, color.2);
         }
