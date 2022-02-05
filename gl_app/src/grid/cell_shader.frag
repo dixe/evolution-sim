@@ -23,9 +23,6 @@ float border(vec2 fragCoord, float gridWidth)
     return 1.0;
 }
 
-vec3 base_color(vec2 fragCoord) {
-   return vec3(0.9, 0.9, 0.9);
-}
 
 void main()
 {

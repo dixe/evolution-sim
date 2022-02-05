@@ -18,6 +18,17 @@ pub enum Color {
     RGB(u8, u8, u8)
 }
 
+impl Color {
+
+    pub fn to_gl_color(&self) -> na::Vector3::<f32> {
+        match self {
+            Color::RGB(r, g, b) => {
+                na::Vector3::new(*r as f32 / 255.0, *g as f32 / 255.0, *b as f32 / 255.0)
+            }
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 pub struct Cell {
     pub cell_type: CellType,
@@ -96,7 +107,7 @@ impl<Message> GridComponent<Message> where Message: Clone  {
 
             self.cell_shader.set_f32(gl, "width", self.base.width / self.size.columns as f32);
 
-            self.cell_shader.set_vec3(gl, "u_color", na::Vector3::new(0.9, 0.1, 0.1));
+            self.cell_shader.set_vec3(gl, "u_color", cell.color.to_gl_color());
 
             render_square.render(&gl);
 

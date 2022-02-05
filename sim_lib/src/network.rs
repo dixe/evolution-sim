@@ -65,7 +65,7 @@ impl Network {
     }
 
 
-    pub fn initialize_from_genome(&mut self, genome: &Vec::<Gene>, config: &Configuration) {
+    pub fn initialize_from_genome(&mut self, genome: &Genome, config: &Configuration) {
 
         self.sensor_inputs.clear();
         self.neurons.clear();

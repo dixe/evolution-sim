@@ -5,7 +5,7 @@ use crate::sensor_neurons;
 
 #[derive(Debug, Clone)]
 pub struct Individual {
-    pub genome: Vec::<Gene>,
+    pub genome: Genome,
     // brain not stored here, but on simulation
     pub grid_index: usize,
     pub index: usize,
@@ -159,7 +159,7 @@ impl Default for Configuration {
         Configuration {
             sensor_neurons: sensor_neurons::all_sensor_neurons(),
             hidden_neurons: 2,
-            action_neurons: vec![Action::MoveForward], //TODO: do in macro so we always get everything
+            action_neurons: all_actions(),
             generation_steps: 300
         }
     }

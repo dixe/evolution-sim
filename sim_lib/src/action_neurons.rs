@@ -4,10 +4,11 @@ use crate::basic_types::*;
 
 pub fn perform_action(activation: &Activation, world: &mut World) {
 
+    use Action::*;
     match activation.action {
-        Action::MoveForward => {
+        MoveForward => {
 
-            // Thresholds. use indiv responsivness to modify
+            // TODO: Thresholds. use indiv responsivness to modify
             if activation.weight < 0.2  {
                 return;
             }
@@ -15,10 +16,36 @@ pub fn perform_action(activation: &Activation, world: &mut World) {
             let dir = world.individuals[activation.indiv_index].forward;
 
             world.move_indiv_dir(activation.indiv_index, dir);
+        },
+        MoveX => {
+
+            // TODO: Thresholds. use indiv responsivness to modify
+            if f64::abs(activation.weight) < 0.2  {
+                return;
+            }
+
+            let dir = if activation.weight < 0.0 { Dir::Left } else { Dir::Right };
+
+            world.move_indiv_dir(activation.indiv_index, dir);
 
         },
-        _ => unimplemented!()
-    }
+        MoveY => {
+            // TODO: Thresholds. use indiv responsivness to modify
+            if f64::abs(activation.weight) < 0.2  {
+                return;
+            }
+
+            let dir = if activation.weight < 0.0 { Dir::Down } else { Dir::Up };
+
+            world.move_indiv_dir(activation.indiv_index, dir);
+
+        },
+        EmitPheromone => {
+
+        },
+        SetOscPeriod => {}
+        SetResponsivness => {},
+    };
 }
 
 

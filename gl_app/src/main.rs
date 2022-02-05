@@ -123,7 +123,8 @@ impl Model {
         // initialize cells
         for indiv in &self.sim.world().individuals {
             let coord = index_functions::index_to_coord(indiv.grid_index, self.sim.world().grid.size);
-            self.cells.push(Cell { cell_type: CellType::Square, color: Color::RGB(255,0,0), point: Point::new(coord.x, coord.y) })
+            let color = gene_functions::genome_to_rgb(&indiv.genome);
+            self.cells.push(Cell { cell_type: CellType::Square, color: Color::RGB(color.0, color.1, color.2), point: Point::new(coord.x, coord.y) })
         }
     }
 
@@ -132,6 +133,9 @@ impl Model {
         for (i, indiv) in self.sim.world().individuals.iter().enumerate() {
             let coord = index_functions::index_to_coord(indiv.grid_index, self.sim.world().grid.size);
             self.cells[i].point = Point::new(coord.x, coord.y);
+            //TODO: update color also??
+            let color = gene_functions::genome_to_rgb(&indiv.genome);
+            self.cells[i].color = Color::RGB(color.0, color.1, color.2);
         }
     }
 

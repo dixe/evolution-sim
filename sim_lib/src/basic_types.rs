@@ -1,4 +1,7 @@
-#[derive(Debug, Clone, Copy)]
+
+pub type Genome = Vec::<Gene>;
+
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Gene {
     pub from_neuron: u8, // First all the inputs are setup, then all internal neuron
     pub to_neuron: u8, // first come all internal neurons then action neurons
@@ -6,9 +9,34 @@ pub struct Gene {
 }
 
 
-//pub type ActionNeuron = fn(f64);
-#[derive(Debug, PartialEq, Clone, Copy)]
-pub enum Action {
+
+macro_rules! all_variants {
+    ($typ:ty) => {
+
+    }
+}
+
+macro_rules! make_enum {
+    (
+        $name:ident $array:ident {
+            $( $variant:ident, )*
+        }
+    ) => {
+        #[derive(Debug, PartialEq, Clone, Copy)]
+        pub enum $name {
+            $( $variant, )*
+        }
+        static $array: &[$name] = &[
+            $( $name::$variant, )*
+        ];
+    }
+}
+
+pub fn all_actions() -> Vec::<Action> {
+    ALL_ACTIONS.to_vec()
+}
+
+make_enum! (Action ALL_ACTIONS {
     MoveForward,
     MoveX,
     MoveY,
@@ -18,7 +46,9 @@ pub enum Action {
     SetOscPeriod,
 
     SetResponsivness,
-}
+
+});
+
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Coord {
