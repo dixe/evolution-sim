@@ -1,7 +1,9 @@
 
 #[derive(Debug, Clone)]
 pub struct LiveTextString {
-    pub text: String
+    pub text: String,
+    pub scale: f32
+
 }
 
 

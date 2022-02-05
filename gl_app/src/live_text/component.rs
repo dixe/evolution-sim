@@ -36,12 +36,12 @@ impl<Message> LiveTextComponent<Message> where Message: Clone  {
 
         let screen_box = ScreenBox::new(self.base.x, self.base.y, self.base.width, self.base.height, screen_w, screen_h);
 
-        let text;
+        let livetext;
         unsafe {
-            text = &(&*self.text_pointer as &LiveTextString).text;
+            livetext = &*self.text_pointer as &LiveTextString;
         }
 
-        tr.render_text(gl, text, Default::default(), screen_box, 1.0);
+        tr.render_text(gl, &livetext.text, Default::default(), screen_box, livetext.scale);
 
 
 

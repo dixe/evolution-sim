@@ -30,7 +30,8 @@ pub struct Coord {
 #[derive(Debug, Clone, Copy)]
 pub struct Activation {
     pub action: Action,
-    pub weight: f64
+    pub weight: f64,
+    pub indiv_index: usize
 }
 
 
@@ -53,6 +54,16 @@ impl GridTile {
 pub struct Grid {
     pub tiles: Vec::<GridTile>,
     pub size: Coord
+}
+
+impl Grid {
+    pub fn clear(&mut self) {
+
+        for tile in &mut self.tiles {
+            tile.individual_index = None;
+            tile.pheromon_level = 0;
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]

@@ -2,7 +2,7 @@ use crate::combined_types::*;
 use crate::basic_types::*;
 
 
-pub fn perform_action(activation: Activation, world: &mut World, indiv_index: usize) {
+pub fn perform_action(activation: &Activation, world: &mut World) {
 
     match activation.action {
         Action::MoveForward => {
@@ -12,9 +12,9 @@ pub fn perform_action(activation: Activation, world: &mut World, indiv_index: us
                 return;
             }
 
-            let dir = world.individuals[indiv_index].forward;
+            let dir = world.individuals[activation.indiv_index].forward;
 
-            world.move_indiv_dir(indiv_index, dir);
+            world.move_indiv_dir(activation.indiv_index, dir);
 
         },
         _ => unimplemented!()

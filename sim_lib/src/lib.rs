@@ -10,6 +10,7 @@ pub mod sensor_neurons;
 pub mod gene_functions;
 pub mod simulation;
 pub mod index_functions;
+pub mod survival_criteria;
 
 pub use combined_types::*;
 pub use basic_types::*;

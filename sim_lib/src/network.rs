@@ -149,7 +149,8 @@ impl Network {
         self.neurons.iter().filter(|n| n.action.is_some()).map(|n|
                                                                Activation {
                                                                    action: n.action.unwrap(),
-                                                                   weight: f64::tanh(n.value)
+                                                                   weight: f64::tanh(n.value),
+                                                                   indiv_index: individual.index
                                                                }).collect()
     }
 }
@@ -166,11 +167,10 @@ mod tests {
         let gene = Gene { from_neuron: 0, to_neuron: 0, weight: 0 };
 
 
-        let config = Configuration {
-            sensor_neurons: vec![constant_neuron, constant_neuron, constant_neuron],
-            hidden_neurons: 0,
-            action_neurons: vec![Action::MoveForward, Action::MoveX]
-        };
+        let mut config = Configuration::default();
+        config.sensor_neurons = vec![constant_neuron, constant_neuron, constant_neuron];
+        config.hidden_neurons = 0;
+        config.action_neurons = vec![Action::MoveForward, Action::MoveX];
 
 
         let mut network = Network::empty();
@@ -201,11 +201,10 @@ mod tests {
 
         let gene = Gene { from_neuron: 0, to_neuron: 1, weight: WEIGHT_SCALE as i16 };
 
-        let config = Configuration {
-            sensor_neurons: vec![constant_neuron, constant_neuron, constant_neuron],
-            hidden_neurons: 1,
-            action_neurons: vec![Action::MoveForward, Action::MoveX]
-        };
+        let mut config = Configuration::default();
+        config.sensor_neurons = vec![constant_neuron, constant_neuron, constant_neuron];
+        config.hidden_neurons = 1;
+        config.action_neurons = vec![Action::MoveForward, Action::MoveX];
 
         let mut network = Network::empty();
 
@@ -238,11 +237,10 @@ mod tests {
 
         let gene1 = Gene { from_neuron: 1, to_neuron: 1, weight: - WEIGHT_SCALE as i16 };
 
-        let config = Configuration {
-            sensor_neurons: vec![constant_neuron, constant_neuron, constant_neuron],
-            hidden_neurons: 1,
-            action_neurons: vec![Action::MoveForward, Action::MoveX]
-        };
+        let mut config = Configuration::default();
+        config.sensor_neurons = vec![constant_neuron, constant_neuron, constant_neuron];
+        config.hidden_neurons = 1;
+        config.action_neurons = vec![Action::MoveForward, Action::MoveX];
 
 
         let mut network = Network::empty();

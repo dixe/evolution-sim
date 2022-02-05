@@ -122,7 +122,9 @@ impl World {
         index
     }
 
-    pub fn set_individuals(&mut self, indivs: Vec::<Individual>) {
+    pub fn reset(&mut self, indivs: Vec::<Individual>) {
+        // clear grid
+        self.grid.clear();
         self.individuals = indivs;
 
         // Update world with individual pos
