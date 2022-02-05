@@ -63,6 +63,7 @@ impl World {
                 let next_index = grid_index + self.grid.size.x;
 
                 if next_index > (self.grid.size.y -1) * self.grid.size.x {
+                    //println!("NOT DOWN {}", grid_index);
                     return false;
                 }
 

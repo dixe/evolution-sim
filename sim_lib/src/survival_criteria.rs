@@ -67,7 +67,7 @@ fn survive_border(world: &World, pct: f32, coord: Coord) -> bool {
     let w = (world.grid.size.x as f32 * pct) as usize;
     let h = (world.grid.size.y as f32 * pct) as usize;
 
-    coord.x < w || coord.y < h || coord.x > world.grid.size.x - w || coord.y > world.grid.size.y- h
+    coord.x <= w || coord.y <= h || coord.x >= world.grid.size.x - w || coord.y >= world.grid.size.y- h
 
 }
 
@@ -121,6 +121,26 @@ mod tests {
         let indexes = surviving_indexes(&world, SurvivalCriteria::TopPart(0.1));
 
         assert_eq!(1, indexes.len())
+    }
+
+
+    #[test]
+    fn survive_border_test() {
+
+        let mut world = World::new(Coord {x: 128, y: 128});
+
+
+        // TOP
+        assert_eq!(true,survive_border(&world, 0.02, Coord {x: 123, y: 1} ));
+        assert_eq!(true, survive_border(&world, 0.02, Coord {x: 123, y: 2} ));
+        assert_eq!(false, survive_border(&world, 0.02, Coord {x: 123, y: 3} ));
+
+        // BOTTOM
+        assert_eq!(true, survive_border(&world, 0.02, Coord {x: 123, y: 127} ));
+        assert_eq!(true, survive_border(&world, 0.02, Coord {x: 123, y: 126} ));
+        assert_eq!(false, survive_border(&world, 0.02, Coord {x: 123, y: 125} ));
+
+
     }
 
 

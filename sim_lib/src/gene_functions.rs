@@ -62,7 +62,6 @@ pub fn mutate_genome<R: rand::Rng>(rng: &mut R, genome: &mut Genome) {
 
     let len = genome.len();
 
-
     match rng.gen::<f32>() {
         // bit flip
         x if x <= 1.0 => {
