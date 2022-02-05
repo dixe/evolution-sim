@@ -113,7 +113,7 @@ impl Simulation {
             generation: 0,
             generation_step: 0,
             rng: rand::thread_rng(),
-            criteria: sc::SurvivalCriteria::TopPart(0.1),
+            criteria: sc::SurvivalCriteria::Border(0.02),
             individual_grid_placement_function: set_individual_grid_index_random,
             stats: vec![Default::default()]
         }
@@ -183,6 +183,11 @@ impl Simulation {
         }
 
         self.stats[index].survival_rate
+    }
+
+    pub fn survive_cells(&self) -> Vec::<Coord>{
+        sc::survive_cells(&self.world, self.criteria)
+
     }
 
     pub fn run_generation(&mut self) {
@@ -306,23 +311,20 @@ mod tests {
         let mut index = 0;
         let mut grid_index = 0;
 
+        let genome = sim.world.individuals[0].genome.clone();
+        let mut indiv = Individual::new();
 
+        indiv.genome = genome;
+        indiv.forward = Dir::Down;
 
-        for indiv in &sim.world.individuals {
+        let start = 128;
+        indiv.grid_index = start;
 
-            if indiv.grid_index > 128 && indiv.forward == Dir::Up {
-                index = indiv.index;
-                grid_index = indiv.grid_index;
-                break;
-            }
-
-        }
-
-        assert!(grid_index != 0);
+        sim.world.reset(vec![indiv]);
 
         sim.step_single_thread();
 
-        assert_eq!(grid_index - 128, sim.world.individuals[index].grid_index);
+        assert_eq!(start + 128, sim.world.individuals[0].grid_index);
 
     }
 

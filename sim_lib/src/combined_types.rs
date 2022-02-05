@@ -1,5 +1,6 @@
 use crate::basic_types::*;
 use rand;
+use rand::Rng;
 use std::fmt;
 use crate::sensor_neurons;
 
@@ -15,10 +16,11 @@ pub struct Individual {
 impl Individual {
 
     pub fn new() -> Self {
+        let mut rng = rand::thread_rng();
         Self {
             genome: vec![],
             grid_index: 0,
-            forward: Dir::Up,
+            forward: ALL_DIRS[rng.gen_range(0..ALL_DIRS.len())],
             index: 0
         }
     }
@@ -53,6 +55,7 @@ impl World {
 
                 // subtract world.width if index > width
                 if grid_index < self.grid.size.x {
+                    println!("SMALLER {:?} {}", self.grid.size, grid_index);
                     return false;
                 }
 
@@ -60,7 +63,8 @@ impl World {
             },
             Dir::Down => {
                 // subtract world.width if index > width
-                if grid_index > self.grid.size.y - 1 * self.grid.size.x {
+                if grid_index > (self.grid.size.y - 1) * self.grid.size.x {
+
                     return false;
                 }
 
@@ -87,7 +91,11 @@ impl World {
     }
 
     pub fn move_indiv_dir(&mut self, indiv_index: usize, dir: Dir) {
+
         let old_index = self.individuals[indiv_index].grid_index;
+
+        println!("old = {:?}", old_index);
+
 
         // If we are blocked by a wall or another idividual we cannot move
         if !self.is_dir_empty(old_index, dir) {

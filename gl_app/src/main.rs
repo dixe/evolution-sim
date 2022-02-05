@@ -27,6 +27,9 @@ pub enum Message {
     ReRender
 }
 
+static INDIV_CELL_INDEX : usize = 0;
+static SURIVE_CELL_INDEX : usize = 1;
+static PHEROMONE_CELL_INDEX : usize = 2;
 fn main() -> Result<(), failure::Error> {
 
     let mut sim = sim_lib::simulation::SimulationBuilder::new(128, 128).build();
@@ -49,7 +52,7 @@ fn main() -> Result<(), failure::Error> {
         Model {
             sim,
             run_state: RunState::Paused,
-            cells_info: CellsInfo { cells: vec![] },
+            cells_info: CellsInfo { cells: vec![vec![], vec![], vec![]] },
             generation_text: LiveTextString { text: "Generation 0".to_string(), scale: 1.0 },
             stat_text: LiveTextString { text: "".to_string(), scale: 0.8 }
         };
@@ -120,22 +123,34 @@ struct Model {
 
 impl Model {
     pub fn initialize_cells(&mut self) {
-        // initialize cells
+        // individuals cells
         for indiv in &self.sim.world().individuals {
             let coord = index_functions::index_to_coord(indiv.grid_index, self.sim.world().grid.size);
             let color = gene_functions::genome_to_rgb(&indiv.genome);
-            self.cells_info.cells.push(Cell { cell_type: CellType::Square, color: Color::RGB(color.0, color.1, color.2), point: Point::new(coord.x, coord.y) })
+            self.cells_info.cells[INDIV_CELL_INDEX].push(Cell { cell_type: CellType::Square, color: Color::RGB(color.0, color.1, color.2), point: Point::new(coord.x, coord.y) })
         }
+
+        // survive cells
+        for coord in &self.sim.survive_cells() {
+            self.cells_info.cells[INDIV_CELL_INDEX].push(Cell { cell_type: CellType::Square, color: Color::RGBA(53, 212, 63, 50), point: Point::new(coord.x, coord.y) })
+        }
+
+
+
+        // pheromones
+
+
+
     }
 
     pub fn update_cells(&mut self) {
 
         for (i, indiv) in self.sim.world().individuals.iter().enumerate() {
             let coord = index_functions::index_to_coord(indiv.grid_index, self.sim.world().grid.size);
-            self.cells_info.cells[i].point = Point::new(coord.x, coord.y);
+            self.cells_info.cells[0][i].point = Point::new(coord.x, coord.y);
             //TODO: update color also??
             let color = gene_functions::genome_to_rgb(&indiv.genome);
-            self.cells_info.cells[i].color = Color::RGB(color.0, color.1, color.2);
+            self.cells_info.cells[0][i].color = Color::RGB(color.0, color.1, color.2);
         }
     }
 

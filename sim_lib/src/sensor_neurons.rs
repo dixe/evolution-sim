@@ -135,14 +135,17 @@ mod tests {
 
         let mut world = create_test_world();
 
-        let mut indiv_0_0 = Individual::new();
-        indiv_0_0.grid_index = 128/2 + 128* 128/2;
-        let i0_index = world.add_individual(indiv_0_0);
+        //
+        let mut indiv_64_64 = Individual::new();
+        indiv_64_64.forward = Dir::Up;
+        indiv_64_64.grid_index = 64 + 128* 128/2;
+        let i0_index = world.add_individual(indiv_64_64);
 
 
-        let mut indiv_0_1 = Individual::new();
-        indiv_0_1.grid_index = 128/2 + 128* (128/2 -1);
-        let i1_index = world.add_individual(indiv_0_1);
+        let mut indiv_64_63 = Individual::new();
+        indiv_64_63.forward = Dir::Up;
+        indiv_64_63.grid_index = 128/2 + 128* (128/2 -1);
+        let i1_index = world.add_individual(indiv_64_63);
 
 
         let is_blocked = get_sensor_input(Sensor::BlockedForward, &world, &world.individuals[i0_index]);

@@ -15,15 +15,19 @@ use crate::grid::*;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Color {
-    RGB(u8, u8, u8)
+    RGB(u8, u8, u8),
+    RGBA(u8, u8, u8, u8)
 }
 
 impl Color {
 
-    pub fn to_gl_color(&self) -> na::Vector3::<f32> {
+    pub fn to_gl_color(&self) -> na::Vector4::<f32> {
         match self {
             Color::RGB(r, g, b) => {
-                na::Vector3::new(*r as f32 / 255.0, *g as f32 / 255.0, *b as f32 / 255.0)
+                na::Vector4::new(*r as f32 / 255.0, *g as f32 / 255.0, *b as f32 / 255.0, 1.0)
+            }
+            Color::RGBA(r, g, b, a) => {
+                na::Vector4::new(*r as f32 / 255.0, *g as f32 / 255.0, *b as f32 / 255.0, *a as f32 / 255.0)
             }
         }
     }
@@ -96,20 +100,22 @@ impl<Message> GridComponent<Message> where Message: Clone  {
             info =  &*self.cells_info as &CellsInfo;
         }
 
-        for cell in &info.cells {
-            //let transform = self.base.unit_square_transform_matrix(screen_w as f32, screen_h as f32);
-            let transform = self.cell_transform_matrix(cell.point, screen_w, screen_h);
-            self.cell_shader.set_used();
+        for cells in &info.cells {
+            for cell in cells {
+                //let transform = self.base.unit_square_transform_matrix(screen_w as f32, screen_h as f32);
+                let transform = self.cell_transform_matrix(cell.point, screen_w, screen_h);
+                self.cell_shader.set_used();
 
-            self.cell_shader.set_mat4(gl, "transform", transform);
+                self.cell_shader.set_mat4(gl, "transform", transform);
 
-            self.cell_shader.set_f32(gl, "height", self.base.height / self.size.rows as f32);
+                self.cell_shader.set_f32(gl, "height", self.base.height / self.size.rows as f32);
 
-            self.cell_shader.set_f32(gl, "width", self.base.width / self.size.columns as f32);
+                self.cell_shader.set_f32(gl, "width", self.base.width / self.size.columns as f32);
 
-            self.cell_shader.set_vec3(gl, "u_color", cell.color.to_gl_color());
+                self.cell_shader.set_vec4(gl, "u_color", cell.color.to_gl_color());
 
-            render_square.render(&gl);
+                render_square.render(&gl);
+            }
         }
 
     }

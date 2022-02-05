@@ -22,6 +22,15 @@ mod tests {
     }
 
 
+    #[test]
+    fn test_1() {
+
+        let size = Coord {x: 128, y: 128};
+
+        assert_eq!(Coord { x: 110, y: 64} , index_to_coord(8302, size));
+    }
+
+
 
 
     #[test]

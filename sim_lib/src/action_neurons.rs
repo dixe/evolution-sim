@@ -68,6 +68,7 @@ mod tests {
         let mut world = create_test_world();
 
         let mut indiv = Individual::new();
+        indiv.forward = Dir::Up;
         indiv.grid_index = 128/2 + 128* (128/2 -1);
         let old_grid_index = indiv.grid_index;
         let indiv_index = world.add_individual(indiv);

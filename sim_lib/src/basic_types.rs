@@ -26,7 +26,7 @@ macro_rules! make_enum {
         pub enum $name {
             $( $variant, )*
         }
-        static $array: &[$name] = &[
+        pub static $array: &[$name] = &[
             $( $name::$variant, )*
         ];
     }
@@ -119,10 +119,9 @@ impl Grid {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum Dir {
+make_enum! (Dir ALL_DIRS {
     Up,
     Down,
     Left,
-    Right
-}
+    Right,
+});
