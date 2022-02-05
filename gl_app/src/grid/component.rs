@@ -51,13 +51,13 @@ pub struct GridComponent<Message> {
     size: GridSize,
     left_clicked_message: fn(Point) -> Message,
     right_clicked_message: fn(Point) -> Message,
-    cells: CellsPointer
+    cells_info: *const CellsInfo
 }
 
 
 impl<Message> GridComponent<Message> where Message: Clone  {
 
-    pub fn new(gl: &gl::Gl, size: GridSize, cells: CellsPointer, left_clicked_message: fn(Point) -> Message, right_clicked_message: fn(Point) -> Message) -> Box<Self> {
+    pub fn new(gl: &gl::Gl, size: GridSize, cells_info: *const CellsInfo, left_clicked_message: fn(Point) -> Message, right_clicked_message: fn(Point) -> Message) -> Box<Self> {
         let grid_shader = grid_shader(gl).unwrap();
 
         let cell_shader = cell_shader(gl).unwrap();
@@ -69,7 +69,7 @@ impl<Message> GridComponent<Message> where Message: Clone  {
             base: Default::default(),
             left_clicked_message,
             right_clicked_message,
-            cells
+            cells_info
         })
     }
 
@@ -91,12 +91,12 @@ impl<Message> GridComponent<Message> where Message: Clone  {
 
     fn render_cells(&self, gl: &gl::Gl, render_square: &square::Square, screen_w: f32, screen_h: f32) {
 
-        let slice;
+        let info;
         unsafe {
-            slice = std::slice::from_raw_parts(self.cells.pointer, self.cells.len)
+            info =  &*self.cells_info as &CellsInfo;
         }
 
-        for cell in slice {
+        for cell in &info.cells {
             //let transform = self.base.unit_square_transform_matrix(screen_w as f32, screen_h as f32);
             let transform = self.cell_transform_matrix(cell.point, screen_w, screen_h);
             self.cell_shader.set_used();
@@ -110,8 +110,6 @@ impl<Message> GridComponent<Message> where Message: Clone  {
             self.cell_shader.set_vec3(gl, "u_color", cell.color.to_gl_color());
 
             render_square.render(&gl);
-
-
         }
 
     }

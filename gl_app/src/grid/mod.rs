@@ -11,10 +11,9 @@ pub struct GridSize  {
     pub rows: usize,
 }
 
-#[derive(Debug, Clone, Copy)]
-pub struct CellsPointer {
-    pointer: *const Cell,
-    len: usize
+#[derive(Debug, Clone)]
+pub struct CellsInfo {
+    pub cells: Vec::<Cell>
 }
 
 mod component;

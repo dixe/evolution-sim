@@ -49,7 +49,7 @@ fn main() -> Result<(), failure::Error> {
         Model {
             sim,
             run_state: RunState::Paused,
-            cells: vec![],
+            cells_info: CellsInfo { cells: vec![] },
             generation_text: LiveTextString { text: "Generation 0".to_string(), scale: 1.0 },
             stat_text: LiveTextString { text: "".to_string(), scale: 0.8 }
         };
@@ -113,7 +113,7 @@ enum RunState {
 struct Model {
     sim: sim_lib::simulation::Simulation,
     run_state: RunState,
-    cells: Vec::<Cell>,
+    cells_info: CellsInfo,
     generation_text: LiveTextString,
     stat_text: LiveTextString,
 }
@@ -124,7 +124,7 @@ impl Model {
         for indiv in &self.sim.world().individuals {
             let coord = index_functions::index_to_coord(indiv.grid_index, self.sim.world().grid.size);
             let color = gene_functions::genome_to_rgb(&indiv.genome);
-            self.cells.push(Cell { cell_type: CellType::Square, color: Color::RGB(color.0, color.1, color.2), point: Point::new(coord.x, coord.y) })
+            self.cells_info.cells.push(Cell { cell_type: CellType::Square, color: Color::RGB(color.0, color.1, color.2), point: Point::new(coord.x, coord.y) })
         }
     }
 
@@ -132,10 +132,10 @@ impl Model {
 
         for (i, indiv) in self.sim.world().individuals.iter().enumerate() {
             let coord = index_functions::index_to_coord(indiv.grid_index, self.sim.world().grid.size);
-            self.cells[i].point = Point::new(coord.x, coord.y);
+            self.cells_info.cells[i].point = Point::new(coord.x, coord.y);
             //TODO: update color also??
             let color = gene_functions::genome_to_rgb(&indiv.genome);
-            self.cells[i].color = Color::RGB(color.0, color.1, color.2);
+            self.cells_info.cells[i].color = Color::RGB(color.0, color.1, color.2);
         }
     }
 
@@ -190,7 +190,7 @@ impl gls::State<Message> for Model {
             .padding(20.0)
             .add(top_row(&self))
             .add(Row::new()
-                 .add(GridLayout::new(size, &self.cells, Message::GridClick, Message::GridClick)
+                 .add(GridLayout::new(size, &self.cells_info, Message::GridClick, Message::GridClick)
                       .width(Px(600))
                       .max_width(600)
                       .max_height(600)

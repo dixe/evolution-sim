@@ -16,21 +16,18 @@ pub struct GridLayout<Message> {
     left_clicked_message: fn(Point) -> Message,
     right_clicked_message: fn(Point) -> Message,
     size: GridSize,
-    cells: CellsPointer, // Use a pointer for now, to make easy realtime update
+    cells_info: *const CellsInfo, // Use a pointer for now, to make easy realtime update
 }
 
 
 impl<Message> GridLayout<Message> where Message: Clone {
-    pub fn new(size: GridSize, cells: &Vec::<Cell>, left_clicked_message: fn(Point) -> Message, right_clicked_message: fn(Point) -> Message) -> Self {
+    pub fn new(size: GridSize, cells_info: *const CellsInfo, left_clicked_message: fn(Point) -> Message, right_clicked_message: fn(Point) -> Message) -> Self {
         Self {
             attributes: Default::default(),
             left_clicked_message,
             right_clicked_message,
             size,
-            cells: CellsPointer {
-                pointer: cells.as_ptr(),
-                len: cells.len()
-            },
+            cells_info,
         }
     }
 }
@@ -58,7 +55,7 @@ impl<Message> Element<Message> for GridLayout<Message> where Message: 'static + 
     }
 
     fn create_component(&self, gl: &gl::Gl, comp_base: ComponentBase) -> Option<Component<Message>> {
-        let mut grid: Component<Message> = GridComponent::new(gl, self.size, self.cells, self.left_clicked_message, self.right_clicked_message);
+        let mut grid: Component<Message> = GridComponent::new(gl, self.size, self.cells_info, self.left_clicked_message, self.right_clicked_message);
         grid.set_base(comp_base);
         Some(grid)
     }
