@@ -52,26 +52,24 @@ impl World {
 
         match dir {
             Dir::Up => {
-
-                // subtract world.width if index > width
                 if grid_index < self.grid.size.x {
-                    println!("SMALLER {:?} {}", self.grid.size, grid_index);
                     return false;
                 }
 
                 return self.grid.tiles[ grid_index - self.grid.size.x].is_empty();
             },
             Dir::Down => {
-                // subtract world.width if index > width
-                if grid_index > (self.grid.size.y - 1) * self.grid.size.x {
 
+                let next_index = grid_index + self.grid.size.x;
+
+                if next_index > (self.grid.size.y -1) * self.grid.size.x {
                     return false;
                 }
+
 
                 return self.grid.tiles[ grid_index + self.grid.size.x].is_empty();
             }
             Dir::Left => {
-                // subtract world.width if index > width
                 if grid_index % self.grid.size.x == 0 {
                     return false;
                 }
@@ -80,7 +78,6 @@ impl World {
             }
 
             Dir::Right => {
-                // subtract world.width if index > width
                 if grid_index % self.grid.size.x == self.grid.size.x - 1 {
                     return false;
                 }
@@ -93,8 +90,6 @@ impl World {
     pub fn move_indiv_dir(&mut self, indiv_index: usize, dir: Dir) {
 
         let old_index = self.individuals[indiv_index].grid_index;
-
-        println!("old = {:?}", old_index);
 
 
         // If we are blocked by a wall or another idividual we cannot move
