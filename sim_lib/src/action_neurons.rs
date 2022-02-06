@@ -40,8 +40,16 @@ pub fn perform_action(activation: &Activation, world: &mut World) {
             world.move_indiv_dir(activation.indiv_index, dir);
 
         },
-        EmitPheromone => {
+        EmitPheromone => { // pheromones in neighboor hood
+            if activation.weight < 0.2  {
+                return;
+            }
 
+            //TODO: make this in neighborhood and not just single tile
+
+            let base_pheromone = 10;
+            let center_grid_index = world.individuals[activation.indiv_index].grid_index;
+            world.grid.increment_pheromone(center_grid_index, base_pheromone);
         },
         SetOscPeriod => {}
         SetResponsivness => {},

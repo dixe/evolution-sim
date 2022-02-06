@@ -35,6 +35,7 @@ fn main() -> Result<(), failure::Error> {
 
     let mut sim =
         sim_lib::simulation::SimulationBuilder::new(128, 128)
+        .genome_length(10)
         .mutation_rate(0.1)
         .build();
 
@@ -158,7 +159,9 @@ impl Model {
     }
 
     pub fn update_stats(&mut self) {
-        self.stat_text.text = format!("Survival rate: {:.0} %", self.sim.last_survival_rate());
+        let config = self.sim.config();
+
+        self.stat_text.text = format!("{:#?}\nSurvival rate: {:.0} %", config, self.sim.last_survival_rate());
     }
 }
 

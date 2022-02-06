@@ -56,6 +56,11 @@ impl SimulationBuilder {
         self
     }
 
+    pub fn genome_length(mut self, gl: usize) -> Self {
+        self.sim.config.genome_length = gl;
+        self
+    }
+
     pub fn hidden_neurons(mut self, hn: usize) -> Self {
         self.sim.config.hidden_neurons = hn;
         self

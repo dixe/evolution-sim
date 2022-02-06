@@ -2,6 +2,8 @@ use crate::basic_types::*;
 use crate::survival_criteria as sc;
 use rand;
 use rand::Rng;
+use crate::grid::*;
+
 
 #[derive(Debug, Clone)]
 pub struct Individual {
@@ -34,15 +36,8 @@ pub struct World {
 impl World {
     pub fn new(size: Coord) -> Self {
 
-        let mut tiles = Vec::new();
-        for _ in 0..size.y {
-            for _ in 0..size.x {
-                tiles.push(GridTile::default());
-            }
-        }
-
         World {
-            grid: Grid { tiles, size },
+            grid: Grid::new(size),
             individuals: Vec::new()
         }
     }

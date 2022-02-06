@@ -64,9 +64,9 @@ A number of input neurons.
 
 ### Outputs
 
-- [ ] Move forward (forward is last moved direction)
-- [ ] Move Left/right
-- [ ] Move up/down
+- [x] Move forward (forward is last moved direction)
+- [x] Move Left/right
+- [x] Move up/down
 - [ ] Move random
 
 - [ ] set oscillator period

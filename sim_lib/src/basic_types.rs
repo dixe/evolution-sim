@@ -82,37 +82,6 @@ pub struct Activation {
 }
 
 
-#[derive(Debug, Default, Clone)]
-pub struct GridTile {
-    pub individual_index: Option<usize>,
-    pub pheromon_level: u8
-}
-
-impl GridTile {
-
-    pub fn is_empty(&self) -> bool {
-        // TODO: when adding walls also check if wall
-        self.individual_index.is_none()
-
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct Grid {
-    pub tiles: Vec::<GridTile>,
-    pub size: Coord
-}
-
-impl Grid {
-    pub fn clear(&mut self) {
-
-        for tile in &mut self.tiles {
-            tile.individual_index = None;
-            tile.pheromon_level = 0;
-        }
-    }
-}
-
 make_enum! (Dir ALL_DIRS {
     Up,
     Down,
