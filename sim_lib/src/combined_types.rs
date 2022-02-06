@@ -142,11 +142,9 @@ impl World {
 
 
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Configuration {
-    pub sensor_neurons: Vec::<Sensor>,
     pub hidden_neurons: usize,
-    pub action_neurons: Vec::<Action>,
     pub generation_steps: usize,
     pub mutation_rate: f32,
 }
@@ -155,9 +153,7 @@ pub struct Configuration {
 impl Default for Configuration {
     fn default () -> Self {
         Configuration {
-            sensor_neurons: all_sensors(),
             hidden_neurons: 2,
-            action_neurons: all_actions(),
             generation_steps: 300,
             mutation_rate: 0.0,
         }

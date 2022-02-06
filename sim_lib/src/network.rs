@@ -64,14 +64,14 @@ impl Network {
     }
 
 
-    pub fn initialize_from_genome(&mut self, genome: &Genome, config: &Configuration) {
+    pub fn initialize_from_genome(&mut self, genome: &Genome, config: &Configuration, sensor_neurons: &Vec::<Sensor>, action_neurons: &Vec::<Action>) {
 
         self.sensor_inputs.clear();
         self.neurons.clear();
         self.hidden_connections.clear();
         self.action_neuron_map.clear();
 
-        let inputs_count = config.sensor_neurons.len();
+        let inputs_count = sensor_neurons.len();
         let input_and_hidden_count = inputs_count + config.hidden_neurons;
 
 
@@ -82,7 +82,7 @@ impl Network {
 
         for gene in genome {
             let input_index = (gene.from_neuron as usize % input_and_hidden_count) as usize;
-            let output_index = self.get_output_index(config.hidden_neurons, gene.to_neuron as usize, &config.action_neurons);
+            let output_index = self.get_output_index(config.hidden_neurons, gene.to_neuron as usize, &action_neurons);
 
             // scale weight from i16 range to a smaller f64 range. Along -4..4
             let weight = (gene.weight as f64) / WEIGHT_SCALE;
@@ -168,20 +168,20 @@ mod tests {
 
 
         let mut config = Configuration::default();
-        config.sensor_neurons = vec![Sensor::Constant, Sensor::Constant, Sensor::Constant];
+        let sensor_neurons = vec![Sensor::Constant, Sensor::Constant, Sensor::Constant];
         config.hidden_neurons = 0;
-        config.action_neurons = vec![Action::MoveForward, Action::MoveX];
+        let action_neurons = vec![Action::MoveForward, Action::MoveX];
 
 
         let mut network = Network::empty();
 
-        network.initialize_from_genome(&vec![ gene ], &config);
+        network.initialize_from_genome(&vec![ gene ], &config, &sensor_neurons, &action_neurons);
 
         let world = World::new(Coord {x: 128, y: 128});
         let indiv = Individual::new();
 
 
-        let actions = network.run(&config.sensor_neurons, &world, &indiv);
+        let actions = network.run(&sensor_neurons, &world, &indiv);
 
         println!("{:?}", network);
 
@@ -202,19 +202,19 @@ mod tests {
         let gene = Gene { from_neuron: 0, to_neuron: 1, weight: WEIGHT_SCALE as i16 };
 
         let mut config = Configuration::default();
-        config.sensor_neurons = vec![Sensor::Constant, Sensor::Constant, Sensor::Constant];
+        let sensor_neurons = vec![Sensor::Constant, Sensor::Constant, Sensor::Constant];
         config.hidden_neurons = 1;
-        config.action_neurons = vec![Action::MoveForward, Action::MoveX];
+        let action_neurons = vec![Action::MoveForward, Action::MoveX];
 
         let mut network = Network::empty();
 
-        network.initialize_from_genome(&vec![ gene ], &config);
+        network.initialize_from_genome(&vec![ gene ], &config, &sensor_neurons, &action_neurons);
 
 
         let world = World::new(Coord {x: 128, y: 128});
         let indiv = Individual::new();
 
-        let actions = network.run(&config.sensor_neurons, &world, &indiv);
+        let actions = network.run(&sensor_neurons, &world, &indiv);
 
         println!("{:?}", network);
 
@@ -238,20 +238,20 @@ mod tests {
         let gene1 = Gene { from_neuron: 1, to_neuron: 1, weight: - WEIGHT_SCALE as i16 };
 
         let mut config = Configuration::default();
-        config.sensor_neurons = vec![Sensor::Constant, Sensor::Constant, Sensor::Constant];
+        let sensor_neurons = vec![Sensor::Constant, Sensor::Constant, Sensor::Constant];
         config.hidden_neurons = 1;
-        config.action_neurons = vec![Action::MoveForward, Action::MoveX];
+        let action_neurons = vec![Action::MoveForward, Action::MoveX];
 
 
         let mut network = Network::empty();
 
-        network.initialize_from_genome(&vec![ gene, gene1 ], &config);
+        network.initialize_from_genome(&vec![ gene, gene1 ], &config, &sensor_neurons, &action_neurons);
 
 
         let world = World::new(Coord {x: 128, y: 128});
         let indiv = Individual::new();
 
-        let actions = network.run(&config.sensor_neurons, &world, &indiv);
+        let actions = network.run(&sensor_neurons, &world, &indiv);
 
         println!("{:#?}", network);
 

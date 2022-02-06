@@ -52,7 +52,7 @@ impl SimulationBuilder {
     }
 
     pub fn action_neurons(mut self, an: Vec::<Action>) -> Self {
-        self.sim.config.action_neurons = an;
+        self.sim.action_neurons = an;
         self
     }
 
@@ -62,7 +62,7 @@ impl SimulationBuilder {
     }
 
     pub fn sensor_neurons(mut self, sn: Vec::<Sensor>) -> Self {
-        self.sim.config.sensor_neurons = sn;
+        self.sim.sensor_neurons = sn;
         self
     }
 
@@ -79,10 +79,15 @@ pub struct Simulation {
 
     rng: rand::rngs::ThreadRng,
 
+    // TODO move to config
     population_size: usize,
     genome_length: usize,
-
     criteria: sc::SurvivalCriteria,
+
+    sensor_neurons: Vec::<Sensor>,
+    action_neurons: Vec::<Action>,
+
+
 
     individual_grid_placement_function: fn(&World, &mut Vec::<Individual>, &mut rand::rngs::ThreadRng),
 
@@ -132,7 +137,9 @@ impl Simulation {
             rng: rand::thread_rng(),
             criteria: sc::SurvivalCriteria::BottomPart(0.10),
             individual_grid_placement_function: set_individual_grid_index_random,
-            stats: vec![Default::default()]
+            stats: vec![Default::default()],
+            sensor_neurons: all_sensors(),
+            action_neurons: all_actions()
         }
     }
 
@@ -158,7 +165,7 @@ impl Simulation {
 
     fn setup_individuals(&mut self, mut indivs: Vec::<Individual>) {
         for i in 0..indivs.len() {
-            self.brains[i].network.initialize_from_genome(&indivs[i].genome, &self.config);
+            self.brains[i].network.initialize_from_genome(&indivs[i].genome, &self.config, &self.sensor_neurons, &self.action_neurons);
         }
 
         (self.individual_grid_placement_function)(&self.world, &mut indivs, &mut self.rng);
@@ -198,10 +205,15 @@ impl Simulation {
         self.stats[index].survival_rate
     }
 
+    pub fn run_config(&self) -> Configuration {
+        self.config
+    }
+
     pub fn survive_cells(&self) -> Vec::<Coord>{
         sc::survive_cells(&self.world, self.criteria)
-
     }
+
+
 
     pub fn run_generation(&mut self) {
 
@@ -251,7 +263,7 @@ impl Simulation {
         }
 
         let brains = &mut self.brains;
-        let sensors = &self.config.sensor_neurons;
+        let sensors = &self.sensor_neurons;
         let world = &self.world;
         let activations: Vec::<Vec::<Activation>> = brains.par_iter_mut()
             .map(|brain|{
