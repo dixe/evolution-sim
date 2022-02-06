@@ -1,9 +1,9 @@
-use rand::Rng;
 use crate::basic_types::{Gene, Genome, GENE_BITS};
 
+#[allow(type_alias_bounds)]
 pub type GenomeFunc<R: rand::Rng> = fn(rng: &mut R, genome_len: usize) -> Genome;
 
-pub fn fixed_genome<R: rand::Rng>(rng: &mut R, genome_len: usize, from_neuron: u8, to_neuron: u8) -> Genome {
+pub fn fixed_genome<R: rand::Rng>(_rng: &mut R, genome_len: usize, from_neuron: u8, to_neuron: u8) -> Genome {
 
     let mut res = vec![];
     for _ in 0..genome_len {
@@ -21,12 +21,8 @@ pub fn genome_to_rgb(genome: &Genome) -> (u8, u8, u8) {
 
     let len = genome.len() as f32;
 
-    let mut r = 0.0;
-    let mut g = 0.0;
-    let mut b = 0.0;
-
     let mut rgb = [0.0;3];
-    for (i, gene) in genome.iter().enumerate() {
+    for gene in genome {
         rgb[0] += gene.from_neuron as f32;
         rgb[1] += gene.to_neuron as f32;
         // Add 2^15 - 1 to make positive. Divde by 256 to simlate u8 range
@@ -47,16 +43,6 @@ pub fn random_genome<R: rand::Rng>(rng: &mut R, genome_len: usize) -> Genome {
     }
     res
 }
-
-
-fn random_gene<R: rand::Rng>(rng: &mut R) -> Gene {
-    Gene {
-        from_neuron: rng.gen(),
-        to_neuron: rng.gen(),
-        weight: rng.gen()
-    }
-}
-
 
 pub fn mutate_genome<R: rand::Rng>(rng: &mut R, genome: &mut Genome) {
 
@@ -79,16 +65,17 @@ fn bit_flip(genome: &mut Genome, mut bit_index: usize) {
 
     let gene_index = bit_index / GENE_BITS;
 
+    bit_index = bit_index % GENE_BITS;
     let gene = &mut genome[gene_index];
 
     match bit_index {
-        x if x < 16 => {// weight
+        _x if _x < 16 => {// weight
             gene.weight ^= 1 << bit_index
         },
-        x if x < 24 => { // to_neuron
+        _x if _x < 24 => { // to_neuron
             gene.to_neuron ^= 1 << (bit_index - 16)
         },
-        x  => { // from_neuron
+        _x  => { // from_neuron
             gene.from_neuron ^= 1 << (bit_index - 24)
         }
     }

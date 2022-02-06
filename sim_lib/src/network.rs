@@ -2,9 +2,6 @@ use crate::basic_types::*;
 use crate::combined_types::*;
 use crate::sensor_neurons;
 
-use rand;
-use rand::Rng;
-use std::fmt;
 
 const WEIGHT_SCALE: f64 = 10_000.0;
 

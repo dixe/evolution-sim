@@ -6,6 +6,7 @@ use crate::index_functions::*;
 #[derive(Debug, Clone, Copy)]
 pub enum SurvivalCriteria {
     TopPart(f32),
+    BottomPart(f32),
     Border(f32)
 }
 
@@ -20,6 +21,19 @@ pub fn survive_cells(world: &World, criteria: SurvivalCriteria) -> Vec::<Coord> 
             let mut res = vec![];
             for x in 0..world.grid.size.x {
                 for y in 0..max_survive_y {
+                    res.push(Coord{x,y});
+                }
+            }
+
+            res
+        },
+        SurvivalCriteria::BottomPart(pct) => {
+
+            let min_survive_y = world.grid.size.y - (world.grid.size.y as f32 * pct) as usize;
+
+            let mut res = vec![];
+            for x in 0..world.grid.size.x {
+                for y in min_survive_y..world.grid.size.y {
                     res.push(Coord{x,y});
                 }
             }
@@ -53,7 +67,8 @@ pub fn surviving_indexes(world: &World, criteria: SurvivalCriteria) -> Vec::<usi
 
         if match criteria {
             SurvivalCriteria::TopPart(pct) => survive_top(world, pct, coord),
-            SurvivalCriteria::Border(pct) => survive_border(world, pct, coord)
+            SurvivalCriteria::Border(pct) => survive_border(world, pct, coord),
+            SurvivalCriteria::BottomPart(pct) => survive_bottom(world, pct, coord),
         } {
             res.push(indiv.index);
         }
@@ -76,6 +91,13 @@ fn survive_top(world: &World, pct: f32, coord: Coord) -> bool {
     let max_survive_y = (world.grid.size.y as f32 * pct) as usize;
     coord.y < max_survive_y
 }
+
+
+fn survive_bottom(world: &World, pct: f32, coord: Coord) -> bool {
+    let min_survive_y = world.grid.size.y - (world.grid.size.y as f32 * pct) as usize;
+    coord.y > min_survive_y
+}
+
 
 #[cfg(test)]
 mod tests {

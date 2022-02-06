@@ -1,8 +1,6 @@
 use crate::basic_types::*;
 use rand;
 use rand::Rng;
-use std::fmt;
-use crate::sensor_neurons;
 
 #[derive(Debug, Clone)]
 pub struct Individual {
@@ -36,8 +34,8 @@ impl World {
     pub fn new(size: Coord) -> Self {
 
         let mut tiles = Vec::new();
-        for i in 0..size.y {
-            for j in 0..size.x {
+        for _ in 0..size.y {
+            for _ in 0..size.x {
                 tiles.push(GridTile::default());
             }
         }

@@ -10,13 +10,6 @@ pub struct Gene {
 
 pub static GENE_BITS : usize = 32;
 
-
-macro_rules! all_variants {
-    ($typ:ty) => {
-
-    }
-}
-
 macro_rules! make_enum {
     (
         $name:ident $array:ident {

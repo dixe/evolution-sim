@@ -17,7 +17,7 @@ use live_text::*;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Message {
-    Learn,
+    Evolve,
     RunSingle,
     Step,
     StepGen,
@@ -69,7 +69,7 @@ fn main() -> Result<(), failure::Error> {
     while !window.should_quit() {
 
         match model.run_state {
-            RunState::Learning => {
+            RunState::Evolving => {
                 run_single_generation(&mut model);
             },
             RunState::RunSingleGen => {
@@ -110,7 +110,7 @@ fn run_single_generation(model: &mut Model) {
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum RunState {
-    Learning,
+    Evolving,
     RunSingleGen,
     Paused
 }
@@ -183,8 +183,8 @@ impl gls::State<Message> for Model {
             Message::RunSingle => {
                 self.run_state = RunState::RunSingleGen;
             },
-            Message::Learn => {
-                self.run_state = RunState::Learning
+            Message::Evolve => {
+                self.run_state = RunState::Evolving
             },
             Message::Pause => {
 
@@ -242,7 +242,7 @@ fn top_row(model: &Model) -> gls::layout::Row<Message> {
 
     if model.run_state == RunState::Paused {
         row = row
-            .add(Button::new("Learn", Some(Message::Learn))
+            .add(Button::new("Evolve", Some(Message::Evolve))
                  .height(Px(50)))
             .add(Button::new("Run", Some(Message::RunSingle))
                  .height(Px(50)))

@@ -6,7 +6,6 @@ use crate::combined_types::*;
 use crate::basic_types::*;
 use crate::network;
 use crate::gene_functions;
-use crate::sensor_neurons;
 use crate::action_neurons;
 use crate::survival_criteria as sc;
 
@@ -119,19 +118,19 @@ fn set_individual_grid_index_random(world: &World, indivs: &mut Vec::<Individual
 
 impl Simulation {
     fn new(width: usize, height: usize) -> Self {
-        let mut brains = vec![];
+        let brains = vec![];
         let population_size = 1000;
 
         Self {
             config: Configuration::default(),
-            world: World::new( Coord { x:128, y:128 }),
+            world: World::new( Coord { x: width, y: height }),
             brains,
             population_size,
             genome_length: 3,
             generation: 0,
             generation_step: 0,
             rng: rand::thread_rng(),
-            criteria: sc::SurvivalCriteria::Border(0.02),
+            criteria: sc::SurvivalCriteria::BottomPart(0.10),
             individual_grid_placement_function: set_individual_grid_index_random,
             stats: vec![Default::default()]
         }
@@ -143,7 +142,7 @@ impl Simulation {
         let mut indivs = vec![];
         // generate individuals
         for i in 0..self.population_size {
-            let mut genome = match initial_genome_func {
+            let  genome = match initial_genome_func {
                 Some(f) => f(&mut self.rng, self.genome_length),
                 None => gene_functions::random_genome(&mut self.rng, self.genome_length)
             };
@@ -154,8 +153,6 @@ impl Simulation {
         }
 
         self.setup_individuals(indivs);
-
-
     }
 
 
@@ -164,9 +161,7 @@ impl Simulation {
             self.brains[i].network.initialize_from_genome(&indivs[i].genome, &self.config);
         }
 
-
         (self.individual_grid_placement_function)(&self.world, &mut indivs, &mut self.rng);
-
 
         // Set individuals in the world
         self.world.reset(indivs);
@@ -196,7 +191,7 @@ impl Simulation {
 
         if index == self.generation {
             // Update the generation stats for current gen, to make sure it is computed
-            let mut survive_indexes = sc::surviving_indexes(&self.world, self.criteria);
+            let survive_indexes = sc::surviving_indexes(&self.world, self.criteria);
             self.stats[self.generation].survival_rate = (survive_indexes.len() as f32 / self.population_size as f32) * 100.0;
         }
 
@@ -229,7 +224,7 @@ impl Simulation {
 
 
             // Update the generation stats for current
-            let mut survive_indexes = sc::surviving_indexes(&self.world, self.criteria);
+            let survive_indexes = sc::surviving_indexes(&self.world, self.criteria);
             self.stats[self.generation -1].survival_rate = (survive_indexes.len() as f32 / self.population_size as f32) * 100.0;
 
 
@@ -259,8 +254,8 @@ impl Simulation {
         let sensors = &self.config.sensor_neurons;
         let world = &self.world;
         let activations: Vec::<Vec::<Activation>> = brains.par_iter_mut()
-            .map(|mut brain|{
-                let index = brain.indiv_index;
+            .map(|brain|{
+
                 let indiv = &world.individuals[brain.indiv_index];
 
                 brain.network.run(sensors, world, indiv)

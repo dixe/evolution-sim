@@ -1,4 +1,5 @@
 #[macro_use]
+#[cfg(test)]
 extern crate approx;
 
 pub mod basic_types;
