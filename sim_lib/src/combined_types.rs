@@ -1,4 +1,5 @@
 use crate::basic_types::*;
+use crate::survival_criteria as sc;
 use rand;
 use rand::Rng;
 
@@ -147,12 +148,19 @@ pub struct Configuration {
     pub hidden_neurons: usize,
     pub generation_steps: usize,
     pub mutation_rate: f32,
+    pub population_size: usize,
+    pub genome_length: usize,
+    pub criteria: sc::SurvivalCriteria,
+
 }
 
 
 impl Default for Configuration {
     fn default () -> Self {
         Configuration {
+            criteria: sc::SurvivalCriteria::BottomPart(0.10),
+            genome_length: 3,
+            population_size: 300,
             hidden_neurons: 2,
             generation_steps: 300,
             mutation_rate: 0.0,

@@ -25,7 +25,7 @@ impl SimulationBuilder {
     }
 
     pub fn build(mut self) -> Simulation {
-        for i in 0..self.sim.population_size {
+        for i in 0..self.sim.config.population_size {
             self.sim.brains.push(Brain {
                 indiv_index: i,
                 network: network::Network::empty()
@@ -37,12 +37,12 @@ impl SimulationBuilder {
 
     pub fn criteria(mut self, c: sc::SurvivalCriteria) -> Self
     {
-        self.sim.criteria = c;
+        self.sim.config.criteria = c;
         self
     }
 
     pub fn population_size(mut self, pop: usize) -> Self {
-        self.sim.population_size = pop;
+        self.sim.config.population_size = pop;
         self
     }
 
@@ -79,10 +79,6 @@ pub struct Simulation {
 
     rng: rand::rngs::ThreadRng,
 
-    // TODO move to config
-    population_size: usize,
-    genome_length: usize,
-    criteria: sc::SurvivalCriteria,
 
     sensor_neurons: Vec::<Sensor>,
     action_neurons: Vec::<Action>,
@@ -124,18 +120,14 @@ fn set_individual_grid_index_random(world: &World, indivs: &mut Vec::<Individual
 impl Simulation {
     fn new(width: usize, height: usize) -> Self {
         let brains = vec![];
-        let population_size = 1000;
 
         Self {
             config: Configuration::default(),
             world: World::new( Coord { x: width, y: height }),
             brains,
-            population_size,
-            genome_length: 3,
             generation: 0,
             generation_step: 0,
             rng: rand::thread_rng(),
-            criteria: sc::SurvivalCriteria::BottomPart(0.10),
             individual_grid_placement_function: set_individual_grid_index_random,
             stats: vec![Default::default()],
             sensor_neurons: all_sensors(),
@@ -148,10 +140,10 @@ impl Simulation {
 
         let mut indivs = vec![];
         // generate individuals
-        for i in 0..self.population_size {
+        for i in 0..self.config.population_size {
             let  genome = match initial_genome_func {
-                Some(f) => f(&mut self.rng, self.genome_length),
-                None => gene_functions::random_genome(&mut self.rng, self.genome_length)
+                Some(f) => f(&mut self.rng, self.config.genome_length),
+                None => gene_functions::random_genome(&mut self.rng, self.config.genome_length)
             };
             let mut indiv = Individual::new();
             indiv.index = i;
@@ -198,19 +190,19 @@ impl Simulation {
 
         if index == self.generation {
             // Update the generation stats for current gen, to make sure it is computed
-            let survive_indexes = sc::surviving_indexes(&self.world, self.criteria);
-            self.stats[self.generation].survival_rate = (survive_indexes.len() as f32 / self.population_size as f32) * 100.0;
+            let survive_indexes = sc::surviving_indexes(&self.world, self.config.criteria);
+            self.stats[self.generation].survival_rate = (survive_indexes.len() as f32 / self.config.population_size as f32) * 100.0;
         }
 
         self.stats[index].survival_rate
     }
 
-    pub fn run_config(&self) -> Configuration {
+    pub fn config(&self) -> Configuration {
         self.config
     }
 
     pub fn survive_cells(&self) -> Vec::<Coord>{
-        sc::survive_cells(&self.world, self.criteria)
+        sc::survive_cells(&self.world, self.config.criteria)
     }
 
 
@@ -236,23 +228,25 @@ impl Simulation {
 
 
             // Update the generation stats for current
-            let survive_indexes = sc::surviving_indexes(&self.world, self.criteria);
-            self.stats[self.generation -1].survival_rate = (survive_indexes.len() as f32 / self.population_size as f32) * 100.0;
+            let survive_indexes = sc::surviving_indexes(&self.world, self.config.criteria);
+            self.stats[self.generation -1].survival_rate = (survive_indexes.len() as f32 / self.config.population_size as f32) * 100.0;
 
 
             let mut new_indivs = vec![];
 
-            for i in 0..self.population_size {
+            for i in 0..self.config.population_size {
                 let index = survive_indexes[self.rng.gen_range(0..survive_indexes.len())];
 
                 let mut indiv = Individual::new();
                 let mutation_change: f32 = self.rng.gen();
 
                 indiv.genome = self.world.individuals[index].genome.clone();
+
+                // Maybe mutate
                 if mutation_change < self.config.mutation_rate {
                     gene_functions::mutate_genome(&mut self.rng, &mut indiv.genome);
                 }
-                // TODO: also maybe mutate genome
+
 
                 indiv.index = i;
 
