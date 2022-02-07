@@ -31,13 +31,11 @@ impl World {
 
                 let next_index = grid_index + self.grid.size.x;
 
-                if next_index > (self.grid.size.y -1) * self.grid.size.x {
-                    //println!("NOT DOWN {}", grid_index);
+                if next_index >= self.grid.size.y * self.grid.size.x {
                     return false;
                 }
 
-
-                return self.grid.tiles[ grid_index + self.grid.size.x].is_empty();
+                return self.grid.tiles[next_index].is_empty();
             }
             Dir::Left => {
                 if grid_index % self.grid.size.x == 0 {

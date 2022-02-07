@@ -46,7 +46,6 @@ pub fn survive_cells(world: &World, criteria: SurvivalCriteria) -> Vec::<Coord> 
             for x in 0..world.grid.size.x {
                 for y in 0..world.grid.size.y {
                     let coord = Coord {x, y};
-
                     if survive_border(world, pct, coord) {
                         res.push(coord);
                     }
@@ -161,6 +160,8 @@ mod tests {
         assert_eq!(true, survive_border(&world, 0.02, Coord {x: 123, y: 127} ));
         assert_eq!(true, survive_border(&world, 0.02, Coord {x: 123, y: 126} ));
         assert_eq!(false, survive_border(&world, 0.02, Coord {x: 123, y: 125} ));
+
+        assert_eq!(true, survive_border(&world, 0.02, Coord {x: 64, y: 126} ));
 
 
     }

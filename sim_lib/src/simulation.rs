@@ -247,14 +247,12 @@ impl Simulation {
                 let index = survive_indexes[self.rng.gen_range(0..survive_indexes.len())];
 
                 let mut indiv = Individual::new();
-                let mutation_change: f32 = self.rng.gen();
+
 
                 indiv.genome = self.world.individuals[index].genome.clone();
 
-                // Maybe mutate
-                if mutation_change < self.config.mutation_rate {
-                    gene_functions::mutate_genome(&mut self.rng, &mut indiv.genome);
-                }
+                gene_functions::mutate_genome(&mut self.rng, self.config.mutation_rate, &mut indiv.genome);
+
 
 
                 indiv.index = i;

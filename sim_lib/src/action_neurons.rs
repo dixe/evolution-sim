@@ -64,7 +64,7 @@ pub fn perform_action(activation: &Activation, world: &mut World) {
 mod tests {
 
     use super::*;
-
+    use crate::index_functions;
     fn create_test_world() -> World {
         let world = World::new(Coord {x: 128, y: 128});
         world
@@ -90,6 +90,31 @@ mod tests {
 
         perform_action(&Activation { action: Action::MoveForward, weight: 1.0, indiv_index }, &mut world);
         assert_eq!(old_grid_index - 128, world.individuals[indiv_index].grid_index);
+
+    }
+
+    #[test]
+    fn move_down_last_row() {
+
+        let mut world = create_test_world();
+
+        let mut indiv = Individual::new();
+        indiv.forward = Dir::Down;
+        indiv.grid_index = 128*128 - 150;
+
+        let old_grid_index = indiv.grid_index;
+        let indiv_index = world.add_individual(indiv);
+
+        let old_coord = index_functions::index_to_coord(old_grid_index, world.grid.size);
+
+
+        assert_eq!(126, old_coord.y);
+
+
+        perform_action(&Activation { action: Action::MoveForward, weight: 1.0, indiv_index}, &mut world);
+
+        let new_coord = index_functions::index_to_coord(world.individuals[indiv_index].grid_index, world.grid.size);
+        assert_eq!(127, new_coord.y);
 
     }
 

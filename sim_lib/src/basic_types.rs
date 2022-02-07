@@ -135,7 +135,7 @@ pub struct Configuration {
 impl Default for Configuration {
     fn default () -> Self {
         Configuration {
-            criteria: sc::SurvivalCriteria::Border(0.010),
+            criteria: sc::SurvivalCriteria::Border(0.020),
             genome_length: 24,
             population_size: 1000,
             hidden_neurons: 5,

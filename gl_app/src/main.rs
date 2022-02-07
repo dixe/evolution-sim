@@ -219,7 +219,7 @@ impl gls::State<Message> for Model {
             Message::ShowSurvivers => {
 
                 // Set all to hidden with alpha = 0
-                for (i, indiv) in self.sim.world().individuals.iter().enumerate() {
+                for i in 0..self.sim.world().individuals.len() {
                     self.cells_info.cells[INDIV_CELL_INDEX][i].color = Color::RGBA(0, 0, 0, 0);
                 }
 

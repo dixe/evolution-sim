@@ -44,29 +44,33 @@ pub fn random_genome<R: rand::Rng>(rng: &mut R, genome_len: usize) -> Genome {
     res
 }
 
-pub fn mutate_genome<R: rand::Rng>(rng: &mut R, genome: &mut Genome) {
+pub fn mutate_genome<R: rand::Rng>(rng: &mut R, mut_rate: f32, genome: &mut Genome) {
 
     let len = genome.len();
 
-    match rng.gen::<f32>() {
-        // bit flip
-        x if x <= 1.0 => {
-            let bit_index = rng.gen_range(0..32 * len);
-            bit_flip(genome, bit_index);
-        },
-        _ => {}
+    for i in 0..len {
+        // show mutate = rng.
+        if rng.gen::<f32>() < mut_rate {
+            // choose mutation
+            match rng.gen::<f32>() {
+                // bit flip
+                x if x <= 1.0 => {
+                    let bit_index = rng.gen_range(0..32 * len);
+                    bit_flip(&mut genome[i], bit_index);
+                },
+                _ => {}
+            }
+        }
     }
 }
 
 
+
 // Flip bit at index bit_index in the genome. Seeing the whole genome a one long string of bits
 // bit_index should be lower than genome.len() * gene.length (32bit atm)
-fn bit_flip(genome: &mut Genome, mut bit_index: usize) {
-
-    let gene_index = bit_index / GENE_BITS;
+fn bit_flip(gene: &mut Gene, mut bit_index: usize) {
 
     bit_index = bit_index % GENE_BITS;
-    let gene = &mut genome[gene_index];
 
     match bit_index {
         _x if _x < 16 => {// weight
@@ -91,32 +95,32 @@ mod tests {
     fn bit_flip_test() {
 
         let mut rng = rand::thread_rng();
-        let gene = fixed_genome(&mut rng, 1, 0, 0);
+        let gene = fixed_genome(&mut rng, 1, 0, 0)[0];
 
         let mut mut_gene = gene.clone();
 
         // FLIPPING FROM NEURON
-        let before = mut_gene[0].from_neuron;
+        let before = mut_gene.from_neuron;
         bit_flip(&mut mut_gene, 31);
 
-        assert_ne!(before, mut_gene[0].from_neuron);
-        assert_eq!(128, mut_gene[0].from_neuron);
+        assert_ne!(before, mut_gene.from_neuron);
+        assert_eq!(128, mut_gene.from_neuron);
 
         // FLIPPING TO NEURON
 
-        let before = mut_gene[0].to_neuron;
+        let before = mut_gene.to_neuron;
         bit_flip(&mut mut_gene, 17);
 
 
-        assert_ne!(before, mut_gene[0].to_neuron);
-        assert_eq!(2 , mut_gene[0].to_neuron);
+        assert_ne!(before, mut_gene.to_neuron);
+        assert_eq!(2 , mut_gene.to_neuron);
 
         // FLIPPING WEIGHT
-        let before = mut_gene[0].weight;
+        let before = mut_gene.weight;
         bit_flip(&mut mut_gene, 2);
 
-        assert_ne!(before, mut_gene[0].weight);
-        assert_eq!(10004, mut_gene[0].weight);
+        assert_ne!(before, mut_gene.weight);
+        assert_eq!(10004, mut_gene.weight);
 
     }
 
