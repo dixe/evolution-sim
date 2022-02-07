@@ -23,7 +23,8 @@ pub enum Message {
     StepGen,
     Pause,
     GridClick(Point),
-    ReRender
+    ReRender,
+    ShowSurvivers
 }
 
 static INDIV_CELL_INDEX : usize = 0;
@@ -140,9 +141,8 @@ impl Model {
             self.cells_info.cells[SURVIVE_CELL_INDEX].push(Cell { cell_type: CellType::Square, color: Color::RGBA(53, 212, 63, 50), point: Point::new(coord.x, coord.y) })
         }
 
-        // pheromones
 
-
+        // INITIAL NO PHEROMONES
 
     }
 
@@ -150,13 +150,35 @@ impl Model {
 
         for (i, indiv) in self.sim.world().individuals.iter().enumerate() {
             let coord = index_functions::index_to_coord(indiv.grid_index, self.sim.world().grid.size);
-            self.cells_info.cells[0][i].point = Point::new(coord.x, coord.y);
+            self.cells_info.cells[INDIV_CELL_INDEX][i].point = Point::new(coord.x, coord.y);
 
 
             let color = gene_functions::genome_to_rgb(&indiv.genome);
-            self.cells_info.cells[0][i].color = Color::RGB(color.0, color.1, color.2);
+            self.cells_info.cells[INDIV_CELL_INDEX][i].color = Color::RGB(color.0, color.1, color.2);
+        }
+
+        // clear old pheromones
+        self.cells_info.cells[PHEROMONE_CELL_INDEX].clear();
+
+        for (i, tile) in self.sim.world().grid.tiles.iter().enumerate() {
+
+            if tile.pheromone_level > 0 {
+
+                // scale to between 0 and 100
+                let alpha = 15.0 + tile.pheromone_level as f32 / 3.0;
+
+                let coord = index_functions::index_to_coord(i, self.sim.world().grid.size);
+
+
+                self.cells_info.cells[PHEROMONE_CELL_INDEX].push(
+                    Cell {
+                        cell_type: CellType::Square,
+                        color: Color::RGBA(125, 65, 204, alpha as u8),
+                        point: Point::new(coord.x, coord.y) });
+            }
         }
     }
+
 
     pub fn update_stats(&mut self) {
         let config = self.sim.config();
@@ -194,6 +216,9 @@ impl gls::State<Message> for Model {
                 self.run_state = RunState::Paused
             },
             Message::ReRender => {},
+            Message::ShowSurvivers => {
+                // Update out fine cells and only keep the ones that in the current step will survive
+            },
         }
     }
 
@@ -211,16 +236,20 @@ impl gls::State<Message> for Model {
             .padding(20.0)
             .add(top_row(&self))
             .add(Row::new()
+
                  .add(GridLayout::new(size, &self.cells_info, Message::GridClick, Message::GridClick)
                       .width(Px(600))
                       .max_width(600)
                       .max_height(600)
                       .height(Fill)
                  )
-                 .add(LiveTextLayout::new(&self.stat_text, None)
-                      .height(Px(600))
-                      .width(Fill)
-                      .align_bottom())
+                 .add(Column::new()
+                      .add(LiveTextLayout::new(&self.generation_text, None)
+                           .padding_bottom(10)
+                           .width(Fill))
+                      .add(LiveTextLayout::new(&self.stat_text, None)
+                           .width(Fill)
+                      ))
 
             );
 
@@ -251,20 +280,16 @@ fn top_row(model: &Model) -> gls::layout::Row<Message> {
                  .height(Px(50)))
             .add(Button::new("Step", Some(Message::Step))
                  .height(Px(50)))
-
             .add(Button::new("Step Generation", Some(Message::StepGen))
                  .height(Px(50)))
+            .add(Button::new("Show Surviver", Some(Message::ShowSurvivers))
+                 .height(Px(50))
+                 .align_right())
     }
     else {
         row = row.add(Button::new("Pause", Some(Message::Pause))
                       .height(Px(50)));
     }
-
-
-    row = row.add(LiveTextLayout::new(&model.generation_text, None)
-                  .height(Px(50))
-                  .width(Px(400))
-                  .align_center());
 
     row
 }

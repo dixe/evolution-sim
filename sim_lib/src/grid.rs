@@ -57,5 +57,25 @@ mod tests {
 
         let mut grid = Grid::new(Coord{ x:10, y:10});
 
+
+        let index = 15;
+        let inc = 20;
+        grid.increment_pheromone(index, inc);
+
+        // increment once increments
+        assert_eq!(inc, grid.tiles[index].pheromone_level);
+
+
+        for i in 0..300 {
+            grid.increment_pheromone(index, 10);
+        }
+
+        // max at 255
+        assert_eq!(255, grid.tiles[index].pheromone_level);
+
+        grid.clear();
+        assert_eq!(0, grid.tiles[index].pheromone_level);
+
+
     }
 }

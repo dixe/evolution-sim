@@ -2,7 +2,7 @@ use gl_lib_sdl::layout::*;
 use gl_lib_sdl::{
     gl_lib::{
         gl,
-        text_rendering::{ text_renderer::TextRenderer },
+        text_rendering::text_renderer::{TextRenderer, TextAlignment, TextAlignmentX, TextAlignmentY},
     }
 };
 use gl_lib_sdl::components::base::*;
@@ -66,7 +66,23 @@ impl<Message> Element<Message> for LiveTextLayout<Message> where Message: 'stati
     }
 
     fn create_component(&self, gl: &gl::Gl, comp_base: ComponentBase) -> Option<Component<Message>> {
-        let mut live_text: Component<Message> = LiveTextComponent::new(gl, self.text_pointer, self.left_clicked_message.clone());
+        let mut alignment : TextAlignment = Default::default();
+
+        // TODO: Move this into more general place, since it might be used by other elements when moved to gl-lib-sdl
+        // TODO: Or maybe just only have 1 alignment that lives in rust-gl-lib
+        alignment.x = match self.attributes.align.x {
+            AlignmentX::Left => TextAlignmentX::Left,
+            AlignmentX::Right => TextAlignmentX::Right,
+            AlignmentX::Center =>TextAlignmentX::Center,
+        };
+
+        alignment.y = match self.attributes.align.y {
+            AlignmentY::Top => TextAlignmentY::Top,
+            AlignmentY::Bottom => TextAlignmentY::Bottom,
+            AlignmentY::Center =>TextAlignmentY::Center,
+        };
+
+        let mut live_text: Component<Message> = LiveTextComponent::new(gl, self.text_pointer, alignment, self.left_clicked_message.clone());
         live_text.set_base(comp_base);
         Some(live_text)
     }

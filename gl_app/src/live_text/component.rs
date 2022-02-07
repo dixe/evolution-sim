@@ -4,7 +4,7 @@ use gl_lib_sdl::{
         gl,
         objects::square,
         ScreenBox,
-        text_rendering::{ text_renderer::{TextRenderer} },
+        text_rendering::{ text_renderer::{TextRenderer, TextAlignment} },
     }
 };
 use std::fmt;
@@ -15,21 +15,24 @@ use crate::live_text::*;
 pub struct LiveTextComponent<Message> {
     pub base: base::ComponentBase,
     left_clicked_message: Option::<Message>,
-    text_pointer: *const LiveTextString
+    text_pointer: *const LiveTextString,
+    text_align: TextAlignment
 }
 
 
 impl<Message> LiveTextComponent<Message> where Message: Clone  {
 
-    pub fn new(_gl: &gl::Gl, text_pointer: *const LiveTextString, left_clicked_message: Option::<Message>) -> Box<Self> {
+    pub fn new(_gl: &gl::Gl, text_pointer: *const LiveTextString, text_align: TextAlignment, left_clicked_message: Option::<Message>) -> Box<Self> {
         Box::new(Self {
             base: Default::default(),
             left_clicked_message,
-            text_pointer
+            text_pointer,
+            text_align
         })
     }
 
     fn render_livetext(&self, gl: &gl::Gl, tr: &mut TextRenderer, screen_w: f32, screen_h: f32) {
+
 
         let screen_box = ScreenBox::new(self.base.x, self.base.y, self.base.width, self.base.height, screen_w, screen_h);
 
@@ -38,9 +41,10 @@ impl<Message> LiveTextComponent<Message> where Message: Clone  {
             livetext = &*self.text_pointer as &LiveTextString;
         }
 
-        tr.render_text(gl, &livetext.text, Default::default(), screen_box, livetext.scale);
+        //println!("Live_text({}e = {:?}", &livetext.text[..10], self.base);
 
 
+        tr.render_text(gl, &livetext.text, self.text_align, screen_box, livetext.scale);
 
     }
 }

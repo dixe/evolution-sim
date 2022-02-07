@@ -1,31 +1,6 @@
 use crate::basic_types::*;
-use crate::survival_criteria as sc;
-use rand;
-use rand::Rng;
 use crate::grid::*;
 
-
-#[derive(Debug, Clone)]
-pub struct Individual {
-    pub genome: Genome,
-    // brain not stored here, but on simulation
-    pub grid_index: usize,
-    pub index: usize,
-    pub forward: Dir
-}
-
-impl Individual {
-
-    pub fn new() -> Self {
-        let mut rng = rand::thread_rng();
-        Self {
-            genome: vec![],
-            grid_index: 0,
-            forward: ALL_DIRS[rng.gen_range(0..ALL_DIRS.len())],
-            index: 0
-        }
-    }
-}
 
 #[derive(Debug, Clone)]
 pub struct World {
@@ -132,33 +107,6 @@ impl World {
             }
 
             self.grid.tiles[indiv.grid_index].individual_index = Some(indiv.index);
-        }
-    }
-}
-
-
-
-#[derive(Debug, Clone, Copy)]
-pub struct Configuration {
-    pub hidden_neurons: usize,
-    pub generation_steps: usize,
-    pub mutation_rate: f32,
-    pub population_size: usize,
-    pub genome_length: usize,
-    pub criteria: sc::SurvivalCriteria,
-
-}
-
-
-impl Default for Configuration {
-    fn default () -> Self {
-        Configuration {
-            criteria: sc::SurvivalCriteria::BottomPart(0.10),
-            genome_length: 3,
-            population_size: 300,
-            hidden_neurons: 2,
-            generation_steps: 300,
-            mutation_rate: 0.0,
         }
     }
 }

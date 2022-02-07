@@ -13,7 +13,7 @@ pub struct GridSize  {
 
 #[derive(Debug, Clone)]
 pub struct CellsInfo {
-    pub cells: Vec<Vec::<Cell>>
+    pub cells: Vec<Vec::<Cell>>,
 }
 
 mod component;

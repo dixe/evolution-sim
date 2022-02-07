@@ -125,16 +125,16 @@ impl<Message> GridComponent<Message> where Message: Clone  {
         // TODO: maybe points in as a buffer and render all "at the same time"
 
         // Get screen coord top left and bottom right. Out screen space is inside this rect
-        let mut sc_top_left = base::ComponentBase::window_to_screen_coords(self.base.x, self.base.y, screen_w, screen_h);
-        let mut sc_bottom_right = base::ComponentBase::window_to_screen_coords(self.base.x + self.base.width, self.base.y + self.base.height , screen_w, screen_h);
+        let sc_top_left = base::ComponentBase::window_to_screen_coords(self.base.x, self.base.y, screen_w, screen_h);
+        let sc_bottom_right = base::ComponentBase::window_to_screen_coords(self.base.x + self.base.width, self.base.y + self.base.height , screen_w, screen_h);
 
 
         // remove border space from cell space
         // TODO: do this more correct, so it scales in size well
-        sc_top_left.x += 0.01;
-        sc_top_left.y -= 0.01;
-        sc_bottom_right.x -= 0.01;
-        sc_top_left.y += 0.01;
+        //sc_top_left.x += 0.01;
+        //sc_top_left.y -= 0.01;
+        //sc_bottom_right.x -= 0.01;
+        //sc_top_left.y += 0.01;
 
 
         let sc_width = sc_bottom_right.x - sc_top_left.x;
