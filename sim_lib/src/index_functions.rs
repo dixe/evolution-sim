@@ -6,6 +6,11 @@ pub fn index_to_coord(grid_index: usize, size: Coord) -> Coord {
 }
 
 
+pub fn coord_to_index(coord: Coord, size: Coord) -> usize {
+    coord.y * size.x + coord.x
+
+}
+
 
 #[cfg(test)]
 mod tests {
@@ -41,5 +46,14 @@ mod tests {
         assert_eq!(Coord { x: 5, y: 1} , index_to_coord(25, size));
     }
 
+    #[test]
+    fn inverse() {
+
+        let size = Coord {x: 128, y: 128};
+
+        assert_eq!(431, coord_to_index(index_to_coord(431, size), size));
+
+        assert_eq!(Coord { x: 65, y: 136}, index_to_coord(coord_to_index(Coord { x: 65, y: 136}, size), size));
+    }
 
 }

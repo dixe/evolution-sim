@@ -1,5 +1,7 @@
 use sim_lib::*;
 
+use sim_lib::survival_criteria as sc;
+
 use failure;
 use std::path::Path;
 use gl_lib_sdl as gls;
@@ -24,7 +26,8 @@ pub enum Message {
     Pause,
     GridClick(Point),
     ReRender,
-    ShowSurvivers
+    ShowSurvivers,
+
 }
 
 static INDIV_CELL_INDEX : usize = 0;
@@ -37,6 +40,7 @@ fn main() -> Result<(), failure::Error> {
     let mut sim =
         sim_lib::simulation::SimulationBuilder::new(128, 128)
         .genome_length(10)
+        .criteria(sc::SurvivalCriteria::Center(Coord {x: 64, y: 64}, 20 ))
         .mutation_rate(0.1)
         .build();
 
