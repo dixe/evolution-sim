@@ -202,6 +202,10 @@ impl Simulation {
         self.stats[index].survival_rate
     }
 
+    pub fn surviving_indexes(&self) -> Vec::<usize> {
+        sc::surviving_indexes(&self.world, self.config.criteria)
+    }
+
     pub fn config(&self) -> Configuration {
         self.config
     }

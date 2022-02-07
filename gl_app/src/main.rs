@@ -217,7 +217,18 @@ impl gls::State<Message> for Model {
             },
             Message::ReRender => {},
             Message::ShowSurvivers => {
-                // Update out fine cells and only keep the ones that in the current step will survive
+
+                // Set all to hidden with alpha = 0
+                for (i, indiv) in self.sim.world().individuals.iter().enumerate() {
+                    self.cells_info.cells[INDIV_CELL_INDEX][i].color = Color::RGBA(0, 0, 0, 0);
+                }
+
+                let indivs = &self.sim.world().individuals;
+
+                for i in self.sim.surviving_indexes() {
+                    let color = gene_functions::genome_to_rgb(&indivs[i].genome);
+                    self.cells_info.cells[INDIV_CELL_INDEX][i].color = Color::RGB(color.0, color.1, color.2);
+                }
             },
         }
     }
