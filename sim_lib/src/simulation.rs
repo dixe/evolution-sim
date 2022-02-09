@@ -303,8 +303,6 @@ impl Simulation {
 mod tests {
 
     use super::*;
-    use crate::sensor_neurons::*;
-    use crate::action_neurons::*;
 
     /// Test that a single a simple brain of move forward, move an indiviual up in a single step
     #[test]
@@ -320,12 +318,6 @@ mod tests {
         sim.initialize_first_generation(Some(|rng, genome_len| gene_functions::fixed_genome(rng, genome_len, 0, 0)));
 
         // find first indiv with index > width (128)
-
-        // move current individual to grid index 300, to make sure that there is space above for a move.
-
-
-        let mut index = 0;
-        let mut grid_index = 0;
 
         let genome = sim.world.individuals[0].genome.clone();
         let mut indiv = Individual::new();

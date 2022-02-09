@@ -16,7 +16,6 @@ pub fn coord_to_index(coord: Coord, size: Coord) -> usize {
 mod tests {
 
     use super::*;
-    use crate::basic_types::*;
 
     #[test]
     fn test_square() {

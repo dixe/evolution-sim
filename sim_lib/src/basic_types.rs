@@ -43,6 +43,7 @@ make_enum! (Sensor ALL_SENSORS {
     WorldBorderDistY,
 
     BlockedForward,
+    PheromoneDensity,
 
     Random,
     Constant,

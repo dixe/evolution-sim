@@ -10,6 +10,7 @@ pub enum SurvivalCriteria {
     Border(f32),
     NoPheromones,
     RequirePheromones,
+    PheromoneInterval(u8, u8),
     Center(Coord, u32),
 }
 
@@ -46,6 +47,8 @@ fn match_criteria(world: &World, criteria: SurvivalCriteria, grid_index: usize) 
         SurvivalCriteria::Border(pct) => survive_border(world, pct, coord),
         SurvivalCriteria::BottomPart(pct) => survive_bottom(world, pct, coord),
         SurvivalCriteria::RequirePheromones => survive_pheromones(world, grid_index),
+        SurvivalCriteria::PheromoneInterval(min, max) => pheromone_interval(world, grid_index, min, max),
+
     }
 }
 
@@ -70,6 +73,13 @@ fn survive_no_pheromones(world: &World, grid_index: usize) -> bool {
 
 fn survive_pheromones(world: &World, grid_index: usize) -> bool {
     world.grid.tiles[grid_index].pheromone_level >= 10
+}
+
+
+fn pheromone_interval(world: &World, grid_index: usize, min: u8, max: u8) -> bool {
+
+    world.grid.tiles[grid_index].pheromone_level >= min && world.grid.tiles[grid_index].pheromone_level <= max
+
 }
 
 fn survive_border(world: &World, pct: f32, coord: Coord) -> bool {
@@ -158,7 +168,7 @@ mod tests {
     #[test]
     fn survive_border_test() {
 
-        let mut world = World::new(Coord {x: 128, y: 128});
+        let world = World::new(Coord {x: 128, y: 128});
 
 
         // TOP

@@ -40,7 +40,7 @@ fn main() -> Result<(), failure::Error> {
     let mut sim =
         sim_lib::simulation::SimulationBuilder::new(128, 128)
         .genome_length(10)
-        .criteria(sc::SurvivalCriteria::Center(Coord {x: 64, y: 64}, 20 ))
+        .criteria(sc::SurvivalCriteria::PheromoneInterval(20, 100))
         .mutation_rate(0.1)
         .build();
 

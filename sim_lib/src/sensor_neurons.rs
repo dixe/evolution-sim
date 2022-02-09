@@ -17,6 +17,7 @@ pub fn get_sensor_input(sensor: Sensor, world: &World, indiv: &Individual) -> f6
         Sensor::LocY => location_y(world, indiv),
         Sensor::WorldBorderDistX => world_border_dist_x(world, indiv),
         Sensor::WorldBorderDistY => world_border_dist_y(world, indiv),
+        Sensor::PheromoneDensity => pheromone_density(world, indiv),
         Sensor::BlockedForward => {
             if world.is_dir_empty(indiv.grid_index, indiv.forward) {
                 0.0
@@ -53,6 +54,7 @@ fn world_border_dist_x(world: &World, indiv: &Individual) -> f64 {
     // given location x between -1 and 1 take the absolute value and subtract it from 1
     1.0 - f64::abs(location)
 }
+
 // WOLRD BORDER_DIST_Y
 // 0 is at a border on Y
 // 1 in the middle
@@ -64,12 +66,15 @@ fn world_border_dist_y(world: &World, indiv: &Individual) -> f64 {
 
 
 
+fn pheromone_density(world: &World, indiv: &Individual) -> f64 {
+    world.grid.tiles[indiv.grid_index].pheromone_level as f64 / 255.0
+}
+
 
 #[cfg(test)]
 mod tests {
 
     use super::*;
-    use crate::basic_types::*;
 
     fn create_test_world() -> World {
         let world = World::new(Coord {x: 128, y: 128});

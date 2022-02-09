@@ -66,7 +66,7 @@ mod tests {
         assert_eq!(inc, grid.tiles[index].pheromone_level);
 
 
-        for i in 0..300 {
+        for _ in 0..300 {
             grid.increment_pheromone(index, 10);
         }
 

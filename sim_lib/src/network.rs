@@ -159,8 +159,6 @@ impl Network {
 mod tests {
 
     use super::*;
-    use crate::sensor_neurons::*;
-    use crate::action_neurons::*;
 
     #[test]
     fn zero_weight() {
