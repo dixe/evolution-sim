@@ -1,6 +1,6 @@
 use crate::combined_types::*;
 use crate::basic_types::*;
-
+use crate::index_functions;
 
 pub fn perform_action(activation: &Activation, world: &mut World) {
 
@@ -40,16 +40,31 @@ pub fn perform_action(activation: &Activation, world: &mut World) {
             world.move_indiv_dir(activation.indiv_index, dir);
 
         },
-        EmitPheromone => { // pheromones in neighboor hood
+        EmitPheromones => { // pheromones in neighboor hood
             if activation.weight < 0.2  {
                 return;
             }
 
-            //TODO: make this in neighborhood and not just single tile
+            let radius : i32 = 5;
 
-            let base_pheromone = 10;
+            let base_pheromone = 10.0;
             let center_grid_index = world.individuals[activation.indiv_index].grid_index;
-            world.grid.increment_pheromone(center_grid_index, base_pheromone);
+
+            let center_coord = index_functions::index_to_coord(center_grid_index, world.grid.size);
+            let radius_sqr = radius * radius;
+            for x in i32::max(0, center_coord.x as i32 - radius)..=i32::min(center_coord.x as i32 + radius, (world.grid.size.x - 1) as i32) {
+                for y in i32::max(0, center_coord.y as i32 - radius )..=i32::min(center_coord.y as i32 + radius,  (world.grid.size.y - 1) as i32) {
+                    let dist = (x - center_coord.x as i32) * (x - center_coord.x as i32) + (y - center_coord.y as i32) * (y - center_coord.y as i32);
+
+                    if dist <= radius_sqr {
+                        let level = (- dist as f32 / 12.0).exp() * base_pheromone;
+                        let grid_index = index_functions::coord_to_index(Coord{x: x as usize, y: y as usize }, world.grid.size);
+
+                        world.grid.increment_pheromone(grid_index, level as u8);
+
+                    }
+                }
+            }
         },
         SetOscPeriod => {}
         SetResponsivness => {},
@@ -117,5 +132,47 @@ mod tests {
         assert_eq!(127, new_coord.y);
 
     }
+
+
+    #[test]
+    fn emit_pheromones() {
+
+        let mut world = create_test_world();
+
+        let mut indiv = Individual::new();
+
+        let index =  64*128 + 64;
+        indiv.grid_index = index;
+
+        let indiv_index = world.add_individual(indiv);
+
+        perform_action(&Activation { action: Action::EmitPheromones, weight: 1.0, indiv_index}, &mut world);
+
+        assert_eq!(10, world.grid.tiles[index].pheromone_level);
+
+        assert_eq!(1, world.grid.tiles[index - 5].pheromone_level);
+
+    }
+
+     #[test]
+    fn emit_pheromones_2() {
+
+        let mut world = create_test_world();
+
+        let mut indiv = Individual::new();
+
+        let index =  0;
+        indiv.grid_index = index;
+
+        let indiv_index = world.add_individual(indiv);
+
+        perform_action(&Activation { action: Action::EmitPheromones, weight: 1.0, indiv_index}, &mut world);
+
+        assert_eq!(10, world.grid.tiles[index].pheromone_level);
+
+        assert_eq!(1, world.grid.tiles[index + 128 * 5].pheromone_level);
+
+    }
+
 
 }

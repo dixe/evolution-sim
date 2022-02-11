@@ -86,7 +86,7 @@ make_enum! (Action ALL_ACTIONS {
     MoveX,
     MoveY,
 
-    EmitPheromone,
+    EmitPheromones,
 
     SetOscPeriod,
 

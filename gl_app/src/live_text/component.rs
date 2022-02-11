@@ -1,12 +1,11 @@
-use gl_lib_sdl::{
-    components::base,
-    gl_lib::{
+use gl_lib::sdl_gui::components::base;
+use gl_lib::{
         gl,
         objects::square,
         ScreenBox,
         text_rendering::{ text_renderer::{TextRenderer, TextAlignment} },
-    }
-};
+    };
+
 use std::fmt;
 use crate::live_text::*;
 

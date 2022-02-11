@@ -43,7 +43,7 @@ A number of input neurons.
 - [ ] last move Y
 - [ ] Last Move X
 
-- [ ] pheromone density
+- [x] pheromone density
 - [ ] pheromone gradient left/right
 - [ ] pheromone gradient ip/down
 

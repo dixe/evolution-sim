@@ -1,6 +1,4 @@
-use gl_lib_sdl::{
-    gl_lib::na,
-};
+use gl_lib::na;
 
 
 pub type Point = na::Vector2::<usize>;

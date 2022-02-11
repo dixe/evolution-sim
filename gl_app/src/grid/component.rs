@@ -1,14 +1,13 @@
-use gl_lib_sdl::{
-    components::base,
-    gl_lib::{
+use gl_lib::sdl_gui::components::base;
+use gl_lib::{
         gl,
         na,
         na::Translation3,
         objects::square,
         shader::Shader,
         text_rendering::{ text_renderer::{TextRenderer} },
-    }
-};
+    };
+
 use std::fmt;
 use crate::grid::*;
 

@@ -293,7 +293,7 @@ name = "gl_app"
 version = "0.1.0"
 dependencies = [
  "failure",
- "gl_lib_sdl",
+ "gl_lib",
  "sim_lib",
 ]
 
@@ -312,23 +312,15 @@ dependencies = [
 name = "gl_lib"
 version = "0.1.0"
 dependencies = [
+ "deltatime",
  "failure",
  "gl_generator",
  "image",
  "itertools",
  "nalgebra",
- "walkdir",
-]
-
-[[package]]
-name = "gl_lib_sdl"
-version = "0.2.0"
-dependencies = [
- "deltatime",
- "failure",
- "gl_lib",
  "num",
  "sdl2",
+ "walkdir",
 ]
 
 [[package]]

@@ -1,11 +1,10 @@
-use gl_lib_sdl::layout::*;
-use gl_lib_sdl::{
-    gl_lib::{
+use gl_lib::sdl_gui::layout::*;
+use gl_lib::{
         gl,
         text_rendering::text_renderer::{TextRenderer, TextAlignment, TextAlignmentX, TextAlignmentY},
-    }
-};
-use gl_lib_sdl::components::base::*;
+    };
+
+use gl_lib::sdl_gui::components::base::*;
 use std::fmt;
 
 use crate::live_text::*;

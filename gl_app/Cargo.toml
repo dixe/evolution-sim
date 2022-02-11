@@ -7,5 +7,5 @@ edition = "2018"
 
 [dependencies]
 sim_lib = { path = "../sim_lib" }
-gl_lib_sdl = { path = "../../rust-gl-lib-sdl" }
+gl_lib = { path = "../../rust-gl-lib" }
 failure = "0.1"
